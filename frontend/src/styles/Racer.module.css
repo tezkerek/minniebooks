@@ -3,12 +3,12 @@
 }
 
 .badWord {
-  color: red;
+  background-color: red;
 }
 
 .goodWord {
-  color: green;
+  background-color: green;
 }
 .neutralWord {
-  color: black;
+  background-color: black;
 }

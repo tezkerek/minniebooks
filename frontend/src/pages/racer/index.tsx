@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import styles from "../../styles/Racer.module.css";
 //TODO: delete everything
 interface Quote {
   text: string;
 }
-let DBQuote: Quote = { text: "asd asd asd s ad." };
+let DBQuote: Quote = { text: "asd asd asd;" };
 
 let quoteIndex = 0;
-let typedString = "";
 
 function MinnieComponent() {
   return (
@@ -40,30 +39,35 @@ function handleKeyPress(
 ) {
   const keypress = event.key;
   const keyOpcode = keypress.length == 1 ? keypress.charCodeAt(0) : -1;
-  if (keypress == " " && checkLetter(keypress, typedString.length)) {
-    setTypedString(typedString + keypress);
-  } else if (0x20 < keyOpcode && keyOpcode <= 0x7e) {
-    // printable
-    setTypedString(typedString + keypress);
-  } else if (keypress === "Backspace") {
+
+  if (keypress === "Backspace") {
     if (!event.ctrlKey) {
       setTypedString(typedString.slice(0, -1));
     } else {
       // handle ctrl + backspace
-      let spacePoz = typedString.lastIndexOf(" ", typedString.length - 2);
-      if (spacePoz === -1) {
-        setTypedString("");
-      } else {
-        setTypedString(typedString.slice(0, spacePoz + 1));
-      }
-    }
-
-    if (typedString.length < quoteIndex) {
-      // handle delete good characters
-      quoteIndex -= 1;
+      // stop at first space
+      let foundSpace = typedString.lastIndexOf(" ", typedString.length - 2);
+      setTypedString(typedString.slice(0, foundSpace + 1));
     }
   }
-  if (checkLetter(keypress)) {
+  if (typedString.length === DBQuote.text.length) {
+    //rejectInput
+    return;
+  }
+  if (0x20 <= keyOpcode && keyOpcode <= 0x7e) {
+    // printable
+    if (keyOpcode == 0x20 && DBQuote.text[typedString.length] != " ") {
+      // ignore bad spaces
+      return;
+    }
+    setTypedString(typedString + keypress);
+  }
+
+  if (typedString.length < quoteIndex) {
+    // handle delete good characters
+    quoteIndex = typedString.length;
+  }
+  if (checkLetter(keypress) && typedString.length == quoteIndex) {
     quoteIndex++;
     if (checkQuoteEnd()) {
       callback();
@@ -80,24 +84,33 @@ function TypeRacerComponent(props: any) {
   let currCharTyped = typedIterator.next();
   let currCharQuote = quoteIterator.next();
   let htmlArr = [];
+  let uniqueVal = 0;
   while (!currCharQuote.done && !currCharTyped.done) {
     if (currCharTyped.value === currCharQuote.value) {
     }
     if (currCharQuote.value === currCharTyped.value) {
       htmlArr.push(
-        <span className={styles.goodWord}>{currCharQuote.value}</span>
+        <span key={uniqueVal} className={styles.goodWord}>
+          {currCharQuote.value}
+        </span>
       );
     } else
       htmlArr.push(
-        <span className={styles.badWord}>{currCharQuote.value}</span>
+        <span key={uniqueVal} className={styles.badWord}>
+          {currCharQuote.value}
+        </span>
       );
     currCharTyped = typedIterator.next();
     currCharQuote = quoteIterator.next();
+    uniqueVal++;
   }
   while (!currCharQuote.done) {
     htmlArr.push(
-      <span className={styles.neuralWord}>{currCharQuote.value}</span>
+      <span key={uniqueVal} className={styles.neuralWord}>
+        {currCharQuote.value}
+      </span>
     );
+    uniqueVal++;
 
     currCharQuote = quoteIterator.next();
   }
