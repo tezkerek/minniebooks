@@ -4,12 +4,10 @@
 
 
 .badWord {
-    display: inline-block;
     color: red;
 }
 
 .goodWord {
-    display: inline-block;
     color: green;
 }
 .neutralWord {
