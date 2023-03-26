@@ -23,16 +23,6 @@ function MinnieComponent() {
     </div>
   );
 }
-export function displayQuote(input: string) {
-  return (
-    <div>
-      <h2>{input}</h2>
-      <h3>
-        Sunt la litera {quoteIndex}, adica la {DBQuote.text[quoteIndex]}{" "}
-      </h3>
-    </div>
-  );
-}
 function checkLetter(
   typedWord: string,
   indexToCompare: number = quoteIndex
@@ -113,7 +103,6 @@ function TypeRacerComponent(props: any) {
   }
   return (
     <div className={styles.center}>
-      {/* {<div>{displayQuote(DBQuote.text)}</div>} */}
       {htmlArr}
       <div></div>
       <div></div>

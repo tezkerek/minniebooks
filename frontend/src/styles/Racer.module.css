@@ -1,15 +1,14 @@
-.center{
-     text-align: center;
+.center {
+  text-align: center;
 }
 
-
 .badWord {
-    color: red;
+  color: red;
 }
 
 .goodWord {
-    color: green;
+  color: green;
 }
 .neutralWord {
-    color: black;
+  color: black;
 }
