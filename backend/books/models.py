@@ -4,9 +4,10 @@ import os
 import sys
 
 
-script_dir = os.path.dirname(__file__)
-userModulePath = os.path.join(script_dir, '..', 'users')
-sys.path.append(userModulePath)
+
+# script_dir = os.path.dirname(__file__)
+# userModulePath = os.path.join(script_dir, '..', 'users')
+# sys.path.append(userModulePath)
 import users.models as usr
 
 
