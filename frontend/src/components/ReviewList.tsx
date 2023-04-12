@@ -9,8 +9,10 @@ export default function ReviewList({ reviews }: ReviewListProps) {
     return (
         <div>
             {reviews.map(review =>
-                <div>
-                    <span className={styles.ratingStar}>{"★".repeat(review.rating).padEnd(5, "☆")}</span>
+                <div key={review.id}>
+                    <span className={styles.ratingStar}>
+                        {"★".repeat(review.rating).padEnd(5, "☆")}
+                    </span>
                     {review.authorUsername}
                     <p>{review.text}</p>
                 </div>
