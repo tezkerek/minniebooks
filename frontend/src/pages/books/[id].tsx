@@ -1,7 +1,7 @@
 import Head from "next/head"
 import { useRouter } from "next/router"
 import BookDetail from "@/components/BookDetail"
-import Navbar from "@/components/navbar"
+import Navbar from "@/components/Navbar"
 import ReviewList from "@/components/ReviewList"
 import styles from "@/styles/BookDetailPage.module.scss"
 
