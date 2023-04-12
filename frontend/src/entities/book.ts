@@ -5,3 +5,4 @@ export default interface Book {
     rating: number
     coverImageUrl: string
 }
+export type Publisher = string;
