@@ -5,7 +5,7 @@ import BookDetail from "@/components/BookDetail"
 import Navbar from "@/components/Navbar"
 import ReviewList from "@/components/ReviewList"
 
-const mockBook = { id: 1, title: "Book1", author: "Author1", rating: 3, coverImageUrl: 'https://edit.org/images/cat/book-covers-big-2019101610.jpg' }
+const mockBook = { id: 1, title: "Book1", author: "Author1", rating: 3, coverImageUrl: 'https://picsum.photos/300/480' }
 const reviews = [{ id: 1, rating: 4, text: "Pretty good book", authorUsername: 'the_critic' }, { id: 2, rating: 2, text: "GarBAGE", authorUsername: 'hater' }]
 
 export default function BookDetailPage() {
