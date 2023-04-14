@@ -1,5 +1,5 @@
 import Review from "@/entities/review";
-import styles from "@/styles/Review.module.scss"
+import StarRating from "./StarRating";
 
 interface ReviewListProps {
     reviews: Array<Review>;
@@ -10,9 +10,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
         <div>
             {reviews.map(review =>
                 <div key={review.id}>
-                    <span className={styles.ratingStar}>
-                        {"★".repeat(review.rating).padEnd(5, "☆")}
-                    </span>
+                    <StarRating rating={review.rating} />
                     {review.authorUsername}
                     <p>{review.text}</p>
                 </div>
