@@ -1,16 +1,23 @@
+import Link from "next/link";
+import styled from "@emotion/styled";
 import Book from "@/entities/book";
 import BookItem from "@/components/BookItem";
-import Link from "next/link";
+
+const Grid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+`
 
 export default function BookGrid({ books }: BookGridProps) {
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
+        <Grid>
             {books.map(book =>
                 <Link key={book.id} href={`/books/${book.id}`}>
                     <BookItem book={book} />
                 </Link>
             )}
-        </div>
+        </Grid>
     )
 }
 
