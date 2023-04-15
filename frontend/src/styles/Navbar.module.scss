@@ -1,0 +1,30 @@
+.navbar {
+    display: flex;
+    width: 100%;
+    padding: 15px 25px;
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.navLink {
+    padding: 10px 5px;
+    margin: 0 10px;
+    display: block;
+    box-sizing: border-box;
+
+    &:after {
+        box-sizing: border-box;
+        display: block;
+        content: '';
+        height: 2px;
+        background-color: var(--color-on-accent);
+        width: 0;
+        transition: 0.25s width;
+    }
+
+    &:hover:after {
+        width: 100%;
+    }
+}
