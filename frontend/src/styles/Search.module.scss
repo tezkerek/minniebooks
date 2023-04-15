@@ -1,0 +1,39 @@
+.container {
+    display: grid;
+    grid-template-rows: 0.4fr 4fr;
+    grid-template-columns: 1fr 4fr;
+    grid-template-areas:
+        ". search"
+        "filters results";
+}
+
+.results {
+    grid-area: results;
+    padding-left: 2%;
+}
+
+.search {
+    grid-area: search;
+    padding-left: 3%;
+
+    .inputField {
+        width: 60%;
+        height: 100%;
+    }
+}
+
+.filters {
+    grid-area: filters;
+    border: 3px solid var(--color-on-accent);
+    padding-right: 5%;
+    padding-left: 5%;
+    padding-top: 5%;
+    box-sizing: content-box;
+}
+
+.filterTitle {
+font-weight: bold;
+text-decoration: underline;
+padding-bottom: 5%;
+padding-top:    5%;
+}
