@@ -13,18 +13,33 @@
 }
 
 .search {
+    display: flex;
+    align-items: center;
     grid-area: search;
     padding-left: 3%;
-
     .inputField {
-        width: 60%;
-        height: 100%;
+        outline: none;
+        border-radius: 0%;
+        font-size: 1.1em;
+        width: 54vw;
+        padding:4px;
+
+    }
+    .submitButton {
+        padding:4px;
+        outline: none;
+        border-radius: 0%;
+        font-size: 1.1em;
+        background: transparent;
+        color: var(--color-on-accent);
+        box-shadow: none;
+        border-style: solid
     }
 }
 
 .filters {
     grid-area: filters;
-    border: 3px solid var(--color-on-accent);
+    border: 3px solid var(--color-accent);
     padding-right: 5%;
     padding-left: 5%;
     padding-top: 5%;
@@ -32,8 +47,8 @@
 }
 
 .filterTitle {
-font-weight: bold;
-text-decoration: underline;
-padding-bottom: 5%;
-padding-top:    5%;
+    font-weight: bold;
+    text-decoration: underline;
+    padding-bottom: 5%;
+    padding-top: 5%;
 }

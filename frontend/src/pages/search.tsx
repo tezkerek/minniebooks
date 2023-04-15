@@ -1,8 +1,9 @@
-import styles from "@/styles/Search.module.scss"
+import { css } from "@emotion/react";
+import styles from "@/styles/Search.module.scss";
 import Slider from "@mui/material/Slider";
 import { Publisher } from "@/entities/book";
 import Head from "next/head";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import Book from "@/entities/book";
 import PublisherFilter from "@/components/filters";
 import { useState } from "react";
@@ -84,12 +85,16 @@ const mockBooks: Array<Book> = [
 ];
 
 export default function SearchPage() {
-  const [selectedPublishers, setSelectedPublishers] = useState<Array<Publisher>>([]);
-  const [yearRange, setYearRange] = useState<Array<number>>([2020, 2023]);
+  let MIN_BOOK_YEAR = 1500;
+  let MAX_BOOK_YEAR = 2023;
+  const [selectedPublishers, setSelectedPublishers] = useState<
+    Array<Publisher>
+  >([]);
+  const [maxYear, setMaxYear] = useState<number>(2023);
+  const [minYear, setMinYear] = useState<number>(1984);
   const [query, setQuery] = useState<string>("");
-
   const submitToBE = () => {
-    console.log(query, yearRange, selectedPublishers);
+    console.log(query, maxYear, minYear, selectedPublishers);
   };
 
   return (
@@ -102,40 +107,63 @@ export default function SearchPage() {
       <Navbar />
       <div className={styles.container}>
         <div className={styles.search}>
-          <h2>Search</h2>
           <form onSubmit={submitToBE}>
-            <input className={styles.inputField}
+            <input
+              className={styles.inputField}
               type="text"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
               }}
             />
-            <input type="submit" value="Submit" />
+            <button className={styles.submitButton} type="submit">
+              Meow!
+            </button>
           </form>
         </div>
         <div className={styles.filters}>
           <p className={styles.filterTitle}>Choose Publisher</p>
-            <PublisherFilter
-              publishers={mockPublishers}
-              selectedPublishers={selectedPublishers}
-              onChange={(publishers: Array<Publisher>) =>
-                setSelectedPublishers(publishers)
-              }
-            />
-          <p className={styles.filterTitle}>Choose Year</p>
+          <PublisherFilter
+            publishers={mockPublishers}
+            selectedPublishers={selectedPublishers}
+            onChange={(publishers: Array<Publisher>) =>
+              setSelectedPublishers(publishers)
+            }
+          />
+          <p className={styles.filterTitle}>Choose Max Year</p>
+          <Slider
+            max={MAX_BOOK_YEAR}
+            min={MIN_BOOK_YEAR}
+            css={sliderColor}
+            value={maxYear}
+            aria-label="Default"
+            valueLabelDisplay="auto"
+            onChange={(event: Event, newValue: number | number[]) => {
+              newValue = newValue as number;
+              if (newValue < minYear) {
+                setMaxYear(minYear);
+              } else setMaxYear(newValue);
+            }}
+          />
+          <p className={styles.filterTitle}>Choose Min Year</p>
 
-            <Slider
-              max={3000}
-              min={800}
-              step={1}
-              value={yearRange}
-              onChange={(event: Event, newValue: number | number[]) => {
-                setYearRange(newValue as number[]);
-              }}
-              
-            />
-            <p>From: {yearRange[0]} to {yearRange[1]}</p>
+          <Slider
+            css={sliderColor}
+            max={MAX_BOOK_YEAR}
+            min={MIN_BOOK_YEAR}
+            value={minYear}
+            aria-label="Big"
+            valueLabelDisplay="auto"
+            onChange={(event: Event, newValue: number | number[]) => {
+              newValue = newValue as number;
+              if (newValue > maxYear) {
+                setMinYear(maxYear);
+              } else setMinYear(newValue);
+            }}
+          />
+          <p css={filterInfoCss}>
+            Range: {minYear} - {maxYear}
+          </p>
         </div>
         <div className={styles.results}>
           <BookGrid books={mockBooks} />
@@ -144,3 +172,10 @@ export default function SearchPage() {
     </>
   );
 }
+
+const filterInfoCss = css`
+    font-weight: bold;
+`
+const sliderColor = css`
+    color: var(--color-accent);
+`

@@ -1,3 +1,4 @@
+import { css } from "@emotion/react";
 import { Publisher } from "@/entities/book";
 
 interface PublisherFilterProps {
@@ -26,15 +27,19 @@ export default function PublisherFilter({
   };
 
   return (
-    <div>
+    <>
       {publishers.map((publisher, i) => (
         <div key={i}>
-          <label>
-            <input type="checkbox" onChange={handleBox} value={publisher} />
-            {publisher}
-          </label>
+          <input css={checkboxColor} type="checkbox" onChange={handleBox} value={publisher} />
+          <label css={labelCheckbox}>{publisher}</label>
         </div>
       ))}
-    </div>
+    </>
   );
 }
+const checkboxColor = css`
+    accent-color: var(--color-accent);
+`
+const labelCheckbox= css`
+    accent-color: var(--color-accent);
+`
