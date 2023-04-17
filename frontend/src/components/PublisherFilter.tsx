@@ -30,7 +30,13 @@ export default function PublisherFilter({
     <>
       {publishers.map((publisher, i) => (
         <div key={i}>
-          <input css={checkboxColor} type="checkbox" onChange={handleBox} value={publisher} />
+          <input
+            css={checkboxColor}
+            type="checkbox"
+            checked={selectedPublishers.includes(publisher)}
+            onChange={handleBox}
+            value={publisher}
+          />
           <label css={labelCheckbox}>{publisher}</label>
         </div>
       ))}
@@ -38,8 +44,8 @@ export default function PublisherFilter({
   );
 }
 const checkboxColor = css`
-    accent-color: var(--color-accent);
-`
-const labelCheckbox= css`
-    accent-color: var(--color-accent);
-`
+  accent-color: var(--color-accent);
+`;
+const labelCheckbox = css`
+  accent-color: var(--color-accent);
+`;
