@@ -87,9 +87,7 @@ const mockBooks: Array<Book> = [
 export default function SearchPage() {
   let MIN_BOOK_YEAR = 1500;
   let MAX_BOOK_YEAR = 2023;
-  const [selectedPublishers, setSelectedPublishers] = useState<
-    Array<Publisher>
-  >([]);
+  const [selectedPublishers, setSelectedPublishers] = useState<Array<Publisher>>([]);
   const [maxYear, setMaxYear] = useState<number>(2023);
   const [minYear, setMinYear] = useState<number>(1984);
   const [query, setQuery] = useState<string>("");
