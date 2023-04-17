@@ -1,0 +1,53 @@
+.container {
+    display: grid;
+    grid-template-rows: 0.4fr 4fr;
+    grid-template-columns: 1fr 4fr;
+    grid-template-areas:
+        ". search"
+        "filters results";
+}
+
+.results {
+    grid-area: results;
+    padding-left: 2%;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    grid-area: search;
+    padding-left: 3%;
+    .inputField {
+        outline: none;
+        border-radius: 0%;
+        font-size: 1.1em;
+        width: 54vw;
+        padding: 4px;
+    }
+    .submitButton {
+        padding: 4px;
+        outline: none;
+        border-radius: 0%;
+        font-size: 1.1em;
+        background: transparent;
+        color: var(--color-on-accent);
+        box-shadow: none;
+        border-style: solid;
+    }
+}
+
+.filters {
+    grid-area: filters;
+    border: 3px solid var(--color-accent);
+    padding-right: 5%;
+    padding-left: 5%;
+    padding-top: 5%;
+    box-sizing: content-box;
+}
+
+.filterTitle {
+    font-weight: bold;
+    text-decoration: underline;
+    padding-bottom: 5%;
+    padding-top: 5%;
+}
