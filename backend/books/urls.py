@@ -6,7 +6,11 @@ import users.views as uv
 router = DefaultRouter()
 router.register('books', views.BookViewSet, basename='book')
 router.register('reviews', views.ReviewViewSet, basename='review')
-router.register('users', uv.UserViewSet, basename='user')
+router.register('author', views.AuthorViewSet, basename='author')
+router.register('quote', views.QuoteViewSet, basename='quote')
+router.register('progressUpdate', views.ProgressUpdateViewSet, basename='progressUpdate')
+router.register('likeDislike', views.LikeDislikeViewSet, basename='likeDislike')
+router.register('bookRecommandation', views.BookRecommandationViewSet, basename='bookRecommandation')
 
 urlpatterns = [
     path('api/', include(router.urls)),

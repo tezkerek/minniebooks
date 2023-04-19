@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book, Review
+from .models import Book, Review, Author, Quote, ProgressUpdate, BookRecommandation, LikeDislike
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -7,36 +7,55 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ['id', 'message', 'stars', 'book']
-        read_only_fields = ['id', 'book']
-
-    def create(self, validated_data):
-        book = self.context['book']
-        review = Review.objects.create(
-            message=validated_data['message'],
-            stars=validated_data['stars'],
-            reader=self.context['request'].user,
-            book=book
-        )
-        return review
+        fields = ['id', 'message', 'stars', 'book', 'reader', 'likes']
+        read_only_fields = ['id']
 
 
 class BookSerializer(serializers.ModelSerializer):
     year = serializers.IntegerField()
     book_cover = serializers.FileField()
-    reviews = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Book
-        fields = ['id', 'title', 'publisher', 'year', 'book_cover', 'reviews']
+        fields = ['id', 'title', 'publisher', 'year', 'book_cover', 'reviews', 'authors', 'recommendations', 'quotes', 'progress_updates']
+        read_only_fields = ['id']
+        
+
+class AuthorSerializer(serializers.ModelSerializer):
+    picture = serializers.FileField()
+
+    class Meta:
+        model = Author
+        fields = ['id', 'first_name', 'last_name', 'description', 'picture', 'books']
         read_only_fields = ['id']
 
-    # def create(self, validated_data):
-    #     book = Book.objects.create(
-    #         title=validated_data['title'],
-    #         publisher=validated_data['publisher'],
-    #         year=validated_data['year'],
-    #         book_cover=validated_data['book_cover']
-    #     )
-    #     return book
+class QuoteSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Quote
+        fields = ['id', 'message', 'uploader', 'book']
+        read_only_fields = ['id']
+
+class ProgressUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProgressUpdate
+        fields = ['id', 'status', 'message', 'reader', 'book']
+        read_only_fields = ['id']
+
+class LikeDislikeSerializer(serializers.ModelSerializer):
+    value = serializers.IntegerField()
+
+    class Meta:
+        model = LikeDislike
+        fields = ['id', 'value', 'reader','review'] 
+        read_only_fields = ['id']
+
+class BookRecommandationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BookRecommandation
+        fields = ['id', 'message', 'book', 'receiver', 'sender']   
+
+
 
