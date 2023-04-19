@@ -5,11 +5,10 @@ from books.serializers import ReviewSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.FileField()
-    reviews = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = MinnieBooksUser
         fields = ['id', 'first_name', 'last_name', 'email',
                   'date_joined', 'profile_picture', 'reviews',
-                  'is_admin', 'is_employee', 'is_active']
+                  'is_admin', 'is_employee', 'is_active', 'recommendations', 'quotes', 'progress_updates', 'likes']
         read_only_fields = ['id']

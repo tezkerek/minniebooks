@@ -3,8 +3,8 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from .serializers import BookSerializer, ReviewSerializer
-from .models import Book, Review
+from .serializers import BookSerializer, ReviewSerializer, AuthorSerializer, QuoteSerializer, ProgressUpdateSerializer, LikeDislikeSerializer, BookRecommandationSerializer
+from .models import Book, Review, Author, Quote, ProgressUpdate, LikeDislike, BookRecommandation
 
 
 class BookViewSet(mixins.ListModelMixin,
@@ -33,11 +33,51 @@ class ReviewViewSet(mixins.ListModelMixin,
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        book_id = self.kwargs.get('book_pk')
-        book = get_object_or_404(Book, pk=book_id)
-        serializer.save(reader=self.request.user, book=book)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+class AuthorViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+class QuoteViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    queryset = Quote.objects.all()
+    serializer_class = QuoteSerializer
+
+class ProgressUpdateViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    queryset = ProgressUpdate.objects.all()
+    serializer_class = ProgressUpdateSerializer
+
+class LikeDislikeViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    queryset = LikeDislike.objects.all()
+    serializer_class = LikeDislikeSerializer
+
+class BookRecommandationViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    queryset = BookRecommandation.objects.all()
+    serializer_class = BookRecommandationSerializer
+
+
+
+
