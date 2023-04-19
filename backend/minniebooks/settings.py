@@ -101,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL ='users.MinnieBooksUser'
+AUTH_USER_MODEL = "users.MinnieBooksUser"
 
 
 # Internationalization
