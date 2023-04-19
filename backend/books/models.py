@@ -13,8 +13,8 @@ class Book(models.Model):
 class Review(models.Model):
     message = models.CharField(max_length=2048)
     stars = models.IntegerField()
-    reader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    reader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE, related_name='reviewz')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
 
     class Meta:
         constraints = [
@@ -26,8 +26,8 @@ class Review(models.Model):
 
 class LikeDislike(models.Model):
     value = models.IntegerField()
-    reader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE)
-    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    reader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE, related_name='likes')
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='likes')
 
     class Meta:
         constraints = [
@@ -40,21 +40,21 @@ class LikeDislike(models.Model):
 class ProgressUpdate(models.Model):
     status = models.CharField(max_length=20)
     message = models.CharField(max_length=512)
-    reader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    reader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE, related_name='progressUpdates')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='progressUpdates')
 
 
 class Quote(models.Model):
     message = models.CharField(max_length=2048)
-    uploader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    uploader = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE, related_name='quotes')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='quotes')
 
 
 class BookRecommandation(models.Model):
     message = models.CharField(max_length=512)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name= "recommandations")
     receiver = models.ForeignKey(
-        MinnieBooksUser, on_delete=models.CASCADE, related_name="receiver"
+        MinnieBooksUser, on_delete=models.CASCADE, related_name="recommandations"
     )
     sender = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE)
 
@@ -64,4 +64,4 @@ class Author(models.Model):
     last_name = models.CharField(max_length=50)
     description = models.CharField(max_length=2048)
     picture = models.FileField(upload_to="files/authors")
-    books = models.ManyToManyField(Book)
+    books = models.ManyToManyField(Book, related_name='authors')
