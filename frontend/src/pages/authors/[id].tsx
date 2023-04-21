@@ -6,16 +6,7 @@ import { css } from "@emotion/react";
 import Navbar from "@/components/Navbar";
 import AuthorDetail from "@/components/AuthorDetail";
 import BookGrid from "@/components/BookGrid";
-
-const mockAuthor: Author = {
-  id: 1,
-  firstName: "Ion",
-  lastName: "Creanga",
-  description:
-    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eos molestias autem blanditiis cumque voluptatibus aperiam suscipit reiciendis quisquam voluptates, illum, facilis rerum ducimus, sequi provident saepe eius neque placeat? Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eos molestias autem blanditiis cumque voluptatibus aperiam suscipit reiciendis quisquam voluptates, illum, facilis rerum ducimus, sequi provident saepe eius neque placeat? Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eos molestias autem blanditiis cumque voluptatibus aperiam suscipit reiciendis quisquam voluptates, illum, facilis rerum ducimus, sequi provident saepe eius neque placeat?",
-  picture:
-    "https://static.cinemagia.ro/img/resize/db/actor/03/46/21/ion-creanga-192313l-600x0-w-f709806b.jpg",
-};
+import { useAuthor } from "@/api/author";
 
 const mockWrittenBooks: Array<Book> = [
   {
@@ -35,13 +26,16 @@ const mockWrittenBooks: Array<Book> = [
 ];
 export default function BookDetailPage() {
   const router = useRouter();
-  const { id } = router.query as { id: string };
+  const { id } = router.query as { id?: string };
+
+  let { author, error, isLoading } = useAuthor(id ?? null)
+  isLoading = isLoading || typeof author === "undefined"
 
   return (
     <>
       <Head>
-        <title>{`${mockAuthor.firstName} ${mockAuthor.lastName} | MinnieBooks`}</title>
-        <meta name="description" content={id} />
+        <title>{`${author?.fullName ?? id} | MinnieBooks`}</title>
+        <meta name="description" content={author?.fullName ?? id} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -54,7 +48,7 @@ export default function BookDetailPage() {
           margin: auto;
         `}
       >
-        <AuthorDetail author={mockAuthor} />
+        {isLoading ? "Loading" : <AuthorDetail author={author as Author} />}
         <p css={titleCss}>Books</p>
         <BookGrid books={mockWrittenBooks} />
       </main>
