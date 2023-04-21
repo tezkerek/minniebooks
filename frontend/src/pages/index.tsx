@@ -1,23 +1,9 @@
 import Head from 'next/head'
-import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import Navbar from '@/components/Navbar'
 import BookGrid from '@/components/BookGrid'
 import Book from '@/entities/book'
-
-const inter = Inter({ subsets: ['latin'] })
-
-const mockBooks: Array<Book> = [
-  { id: 1, title: "Book1", author: "Author1", rating: 3, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 2, title: "Book2", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 3, title: "Book3", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 4, title: "Book4", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 5, title: "Book5", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 6, title: "Book6", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 7, title: "Book7", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 8, title: "Book8", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-  { id: 9, title: "Book9", author: "Author1", rating: 4, coverImageUrl: 'https://picsum.photos/100/160' },
-]
+import { useBookList } from '@/api/book'
 
 export default function Home() {
   return (
@@ -32,8 +18,17 @@ export default function Home() {
       <Navbar />
 
       <main className={styles.main}>
-        <BookGrid books={mockBooks} />
+        <FeaturedBooks />
       </main>
     </>
   )
+}
+
+function FeaturedBooks() {
+  const { books, error, isLoading } = useBookList()
+
+  if (isLoading) return <>Loading</>
+  if (error) return <>{`Error: ${error}`}</>
+
+  return <BookGrid books={books as Array<Book>} />
 }

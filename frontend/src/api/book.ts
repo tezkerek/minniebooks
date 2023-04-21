@@ -12,6 +12,16 @@ export function useBook(id: string | null) {
     }
 }
 
+export function useBookList() {
+    const { data, error, isLoading } = useSWR<Array<JsonBook>, any>(`/api/books/`, fetcher)
+
+    return {
+        books: data ? data.map(fromJson) : data,
+        error,
+        isLoading
+    }
+}
+
 interface JsonBook {
     id: number
     title: string
