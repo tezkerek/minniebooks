@@ -10,13 +10,13 @@ export default function UserDetail({ author }: AuthorDetailProps) {
     <div>
       <div css={mainCss}>
         <img
-          src={author.profilePicture}
+          src={author.picture}
           alt="User picture"
           width={300}
           height={300}
         />
         <div css={detailsCss}>
-          <p css={titleCss}>{`${author.firstName} ${author.lastName}`}</p>
+          <p css={titleCss}>{`${author.fullName}`}</p>
         </div>
       </div>
       <div css={aboutCss}>

@@ -13,7 +13,7 @@ const mockAuthor: Author = {
   lastName: "Creanga",
   description:
     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eos molestias autem blanditiis cumque voluptatibus aperiam suscipit reiciendis quisquam voluptates, illum, facilis rerum ducimus, sequi provident saepe eius neque placeat? Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eos molestias autem blanditiis cumque voluptatibus aperiam suscipit reiciendis quisquam voluptates, illum, facilis rerum ducimus, sequi provident saepe eius neque placeat? Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eos molestias autem blanditiis cumque voluptatibus aperiam suscipit reiciendis quisquam voluptates, illum, facilis rerum ducimus, sequi provident saepe eius neque placeat?",
-  profilePicture:
+  picture:
     "https://static.cinemagia.ro/img/resize/db/actor/03/46/21/ion-creanga-192313l-600x0-w-f709806b.jpg",
 };
 
