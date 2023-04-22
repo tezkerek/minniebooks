@@ -6,15 +6,7 @@ import { css } from "@emotion/react";
 import Navbar from "@/components/Navbar";
 import UserDetail from "@/components/UserDetail";
 import BookGrid from "@/components/BookGrid";
-
-const mockUser: User = {
-  id: 1,
-  firstName: "Mr.",
-  lastName: "Beast",
-  isFriend: false,
-  profilePicture:
-    "https://i1.sndcdn.com/avatars-eVP8xuqmsqyHe4pw-znzVTg-t500x500.jpg",
-};
+import { useUser } from "@/api/user";
 
 const mockBooks: Array<Book> = [
   {
@@ -36,11 +28,14 @@ export default function BookDetailPage() {
   const router = useRouter();
   const { id } = router.query as { id: string };
 
+  let { user, error, isLoading } = useUser(id)
+  isLoading = isLoading || typeof user === "undefined"
+
   return (
     <>
       <Head>
-        <title>{`${mockUser.firstName} ${mockUser.lastName} | MinnieBooks`}</title>
-        <meta name="description" content={id} />
+        <title>{`${user?.fullName ?? id} | MinnieBooks`}</title>
+        <meta name="description" content={user?.fullName ?? id} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -53,7 +48,7 @@ export default function BookDetailPage() {
           margin: auto;
         `}
       >
-        <UserDetail user={mockUser} />
+        {isLoading ? "Loading" : <UserDetail user={user as User} />}
         <BookGrid books={mockBooks} />
       </main>
     </>
