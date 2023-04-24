@@ -2,6 +2,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework import filters
+from rest_framework.decorators import action
+from django.db.models import Q
 
 from .serializers import BookSerializer, ReviewSerializer, AuthorSerializer, QuoteSerializer, ProgressUpdateSerializer, LikeDislikeSerializer, BookRecommandationSerializer
 from .models import Book, Review, Author, Quote, ProgressUpdate, LikeDislike, BookRecommandation
@@ -15,6 +18,35 @@ class BookViewSet(mixins.ListModelMixin,
                   viewsets.GenericViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    filter_backends = [filters.OrderingFilter]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Filter by publishers
+        # Example: books/by-publisher/?publisher="misu2"&publisher="misu"
+        if self.action == 'list_by_publisher':
+            publishers = self.request.query_params.getlist('publisher')
+            if publishers:
+                queryset = queryset.filter(publisher__in=publishers)
+
+        # Filter by year
+        # Example: books/by-year/?min_year=2010&max_year=2030
+        if self.action == 'list_by_year':
+            min_year = self.request.query_params.get('min_year')
+            max_year = self.request.query_params.get('max_year')
+            if min_year and max_year:
+                queryset = queryset.filter(year__range=(min_year, max_year))
+
+        return queryset
+
+    @action(detail=False, methods=['get'], url_path='by-publisher')
+    def list_by_publisher(self, request):
+        return self.list(request)
+
+    @action(detail=False, methods=['get'], url_path='by-year')
+    def list_by_year(self, request):
+        return self.list(request)
 
     def search(self, request):
         query = request.GET.get('query', '')
