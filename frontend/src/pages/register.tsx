@@ -67,7 +67,7 @@ export default function Login(): JSX.Element {
           Register
         </Button>
         <p>
-          or
+          or{" "}
           <a
             css={css`
               text-decoration: underline;
