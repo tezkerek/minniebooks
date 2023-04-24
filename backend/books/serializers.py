@@ -10,17 +10,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ['id', 'message', 'stars', 'book', 'reader', 'likes']
         read_only_fields = ['id']
 
-
-class BookSerializer(serializers.ModelSerializer):
-    year = serializers.IntegerField()
-    book_cover = serializers.FileField()
-
-    class Meta:
-        model = Book
-        fields = ['id', 'title', 'publisher', 'year', 'book_cover', 'reviews', 'authors', 'recommendations', 'quotes', 'progress_updates']
-        read_only_fields = ['id']
-        
-
 class AuthorSerializer(serializers.ModelSerializer):
     picture = serializers.FileField()
 
@@ -28,6 +17,18 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ['id', 'first_name', 'last_name', 'description', 'picture', 'books']
         read_only_fields = ['id']
+
+
+class BookSerializer(serializers.ModelSerializer):
+    year = serializers.IntegerField()
+    book_cover = serializers.FileField()
+    authors = AuthorSerializer(many = True)
+
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'publisher', 'year', 'book_cover', 'reviews', 'authors', 'recommendations', 'quotes', 'progress_updates']
+        read_only_fields = ['id']
+        
 
 class QuoteSerializer(serializers.ModelSerializer):
     
