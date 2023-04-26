@@ -2,7 +2,6 @@ import Head from "next/head";
 import { css } from "@emotion/react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import styles from "@/styles/Login.module.scss";
 import Navbar from "@/components/Navbar";
 import { useState } from "react";
 
@@ -24,7 +23,13 @@ export default function LoginPage(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <main className={styles.login}>
+      <main
+        css={css`
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        `}
+      >
         <p css={titleCss}>Login</p>
         <TextField
           value={email}
