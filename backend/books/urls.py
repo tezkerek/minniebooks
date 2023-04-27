@@ -1,6 +1,25 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
+import users.views as uv
+
+router = DefaultRouter()
+router.register("books", views.BookViewSet, basename="book")
+router.register("reviews", views.ReviewViewSet, basename="review")
+router.register("authors", views.AuthorViewSet, basename="author")
+router.register("quotes", views.QuoteViewSet, basename="quote")
+router.register("likes", views.LikeDislikeViewSet, basename="like")
+router.register(
+    "book-recommendations",
+    views.BookRecommendationViewSet,
+    basename="book-recommendation",
+)
 
 urlpatterns = [
-    path('book/', views.books)
+    path("api/", include(router.urls)),
+    path(
+        "api/books/search/",
+        views.BookViewSet.as_view({"get": "search"}),
+        name="book-search",
+    ),
 ]
