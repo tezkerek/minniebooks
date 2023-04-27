@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 from .models import (
     Book,
     Review,
@@ -10,14 +10,14 @@ from .models import (
 )
 
 
-class ReviewSerializer(serializers.ModelSerializer):
+class ReviewSerializer(ModelSerializer):
     class Meta:
         model = Review
         fields = ["id", "message", "stars", "book", "reader", "likes"]
         read_only_fields = ["id"]
 
 
-class AuthorSerializer(serializers.ModelSerializer):
+class AuthorSerializer(ModelSerializer):
     class Meta:
         model = Author
         fields = ["id", "first_name", "last_name", "description", "picture", "books"]
@@ -25,7 +25,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
-class BookSerializer(serializers.ModelSerializer):
+class BookSerializer(ModelSerializer):
     authors = AuthorSerializer(many=True)
 
     class Meta:
@@ -45,28 +45,28 @@ class BookSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
-class QuoteSerializer(serializers.ModelSerializer):
+class QuoteSerializer(ModelSerializer):
     class Meta:
         model = Quote
         fields = ["id", "message", "uploader", "book"]
         read_only_fields = ["id"]
 
 
-class ProgressUpdateSerializer(serializers.ModelSerializer):
+class ProgressUpdateSerializer(ModelSerializer):
     class Meta:
         model = ProgressUpdate
         fields = ["id", "status", "message", "reader", "book"]
         read_only_fields = ["id"]
 
 
-class LikeDislikeSerializer(serializers.ModelSerializer):
+class LikeDislikeSerializer(ModelSerializer):
     class Meta:
         model = LikeDislike
         fields = ["id", "value", "reader", "review"]
         read_only_fields = ["id"]
 
 
-class BookRecommandationSerializer(serializers.ModelSerializer):
+class BookRecommendationSerializer(ModelSerializer):
     class Meta:
         model = BookRecommandation
         fields = ["id", "message", "book", "receiver", "sender"]

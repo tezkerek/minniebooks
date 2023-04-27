@@ -1,35 +1,31 @@
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, status
-from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly,
-    IsAuthenticated,
-    IsAdminUser,
-)
+from rest_framework import mixins, viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-
-from .serializers import (
-    BookSerializer,
-    ReviewSerializer,
-    AuthorSerializer,
-    QuoteSerializer,
-    ProgressUpdateSerializer,
-    LikeDislikeSerializer,
-    BookRecommandationSerializer,
-)
 from .models import (
-    Book,
-    Review,
     Author,
-    Quote,
-    ProgressUpdate,
-    LikeDislike,
+    Book,
     BookRecommandation,
+    LikeDislike,
+    ProgressUpdate,
+    Quote,
+    Review,
 )
 from .permissions import IsAdminOrReadOnly
+from .serializers import (
+    AuthorSerializer,
+    BookRecommendationSerializer,
+    BookSerializer,
+    LikeDislikeSerializer,
+    ProgressUpdateSerializer,
+    QuoteSerializer,
+    ReviewSerializer,
+)
 
 
 class BookViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
 ):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -71,7 +67,6 @@ class AuthorViewSet(
 class QuoteViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
@@ -84,7 +79,6 @@ class QuoteViewSet(
 class ProgressUpdateViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
@@ -97,8 +91,6 @@ class ProgressUpdateViewSet(
 class LikeDislikeViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
@@ -107,14 +99,12 @@ class LikeDislikeViewSet(
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-class BookRecommandationViewSet(
+class BookRecommendationViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = BookRecommandation.objects.all()
-    serializer_class = BookRecommandationSerializer
+    serializer_class = BookRecommendationSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
