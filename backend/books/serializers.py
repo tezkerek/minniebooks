@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, IntegerField, CharField
 from .models import (
     Book,
     Review,
@@ -11,10 +11,21 @@ from .models import (
 
 
 class ReviewSerializer(ModelSerializer):
+    author_id = IntegerField(source="reader.pk", read_only=True)
+    author_username = CharField(source="reader.full_name", read_only=True)
+
     class Meta:
         model = Review
-        fields = ["id", "message", "stars", "book", "reader", "likes"]
-        read_only_fields = ["id"]
+        fields = [
+            "id",
+            "message",
+            "stars",
+            "book",
+            "likes",
+            "author_id",
+            "author_username",
+        ]
+        read_only_fields = ["id", "book", "likes"]
 
 
 class AuthorSerializer(ModelSerializer):
@@ -27,6 +38,7 @@ class AuthorSerializer(ModelSerializer):
 
 class BookSerializer(ModelSerializer):
     authors = AuthorSerializer(many=True)
+    reviews = ReviewSerializer(many=True)
 
     class Meta:
         model = Book

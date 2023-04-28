@@ -35,7 +35,7 @@ class BookViewSet(
     /api/books/?min_year=2000&max_year=2020&search=dune+messiah
     """
 
-    queryset = Book.objects.all()
+    queryset = Book.objects.prefetch_related("reviews__reader").all()
     serializer_class = BookSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
