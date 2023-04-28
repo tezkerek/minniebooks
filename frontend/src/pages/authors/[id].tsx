@@ -12,14 +12,14 @@ const mockWrittenBooks: Array<Book> = [
   {
     id: 0,
     title: "I got reincarnated as a...",
-    author: "John Doe",
+    authors: [{id: 1, fullName: "John Doe"}],
     rating: 3,
     coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
   },
   {
     id: 1,
     title: "Saving gold in another world for my retirement",
-    author: "Dr. Stone",
+    authors: [{id: 2, fullName: "Dr. Stone"}],
     rating: 4.25,
     coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
   },

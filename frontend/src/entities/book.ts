@@ -1,9 +1,10 @@
+import Author from "./author"
 import Review from "./review"
 
 export default interface Book {
     id: number
     title: string
-    author: string
+    authors: Array<Author>
     rating: number
     coverImageUrl: string
     reviews: Array<Review>
