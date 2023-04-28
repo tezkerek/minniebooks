@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import MinnieBooksUser
+from django.contrib.auth import authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -47,3 +48,24 @@ class RegisterSerializer(serializers.ModelSerializer):
             last_name=validated_data["last_name"],
         )
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(style={"input_type": "password"})
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+        password = attrs.get("password")
+
+        if email and password:
+            user = authenticate(email=email, password=password)
+            if user:
+                attrs["user"] = user
+                return attrs
+            else:
+                raise serializers.ValidationError(
+                    "Unable to log in with provided credentials."
+                )
+        else:
+            raise serializers.ValidationError('Must include "email" and "password".')
