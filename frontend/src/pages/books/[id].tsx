@@ -5,9 +5,8 @@ import BookDetail from "@/components/BookDetail"
 import Navbar from "@/components/Navbar"
 import ReviewList from "@/components/ReviewList"
 import Book from "@/entities/book"
+import Review from "@/entities/review"
 import { useBook } from "@/api/book"
-
-const reviews = [{ id: 1, rating: 4, text: "Pretty good book", authorUsername: 'the_critic' }, { id: 2, rating: 2, text: "GarBAGE", authorUsername: 'hater' }]
 
 export default function BookDetailPage() {
     const router = useRouter()
@@ -34,7 +33,7 @@ export default function BookDetailPage() {
                 {isLoading ? "Loading" : (
                     <>
                         <BookDetail book={book as Book} />
-                        <ReviewList reviews={reviews} />
+                        <ReviewList reviews={book?.reviews as Array<Review>} />
                     </>
                 )}
             </main>
