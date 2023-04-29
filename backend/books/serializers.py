@@ -28,7 +28,25 @@ class ReviewSerializer(ModelSerializer):
         read_only_fields = ["id", "book", "likes"]
 
 
+class AuthorBriefSerializer(ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ["id", "first_name", "last_name", "description", "picture"]
+        read_only_fields = ["id"]
+
+
+class BookBriefSerializer(ModelSerializer):
+    authors = AuthorBriefSerializer(many=True)
+
+    class Meta:
+        model = Book
+        fields = ["id", "title", "publisher", "year", "book_cover", "authors"]
+        read_only_fields = ["id"]
+
+
 class AuthorSerializer(ModelSerializer):
+    books = BookBriefSerializer(many=True)
+
     class Meta:
         model = Author
         fields = ["id", "first_name", "last_name", "description", "picture", "books"]
@@ -37,7 +55,7 @@ class AuthorSerializer(ModelSerializer):
 
 
 class BookSerializer(ModelSerializer):
-    authors = AuthorSerializer(many=True)
+    authors = AuthorBriefSerializer(many=True)
     reviews = ReviewSerializer(many=True)
 
     class Meta:
