@@ -2,7 +2,7 @@ import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 import Navbar from '@/components/Navbar'
 import BookGrid from '@/components/BookGrid'
-import Book from '@/entities/book'
+import { BriefBook } from '@/entities/book'
 import { useBookList } from '@/api/book'
 
 export default function Home() {
@@ -30,5 +30,5 @@ function FeaturedBooks() {
   if (isLoading) return <>Loading</>
   if (error) return <>{`Error: ${error}`}</>
 
-  return <BookGrid books={books as Array<Book>} />
+  return <BookGrid books={books as Array<BriefBook>} />
 }

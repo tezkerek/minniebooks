@@ -1,8 +1,8 @@
 import { css } from "@emotion/react";
-import Author from "@/entities/author";
+import { BriefAuthor } from "@/entities/author";
 
 interface AuthorDetailProps {
-  author: Author;
+  author: BriefAuthor;
 }
 
 export default function UserDetail({ author }: AuthorDetailProps) {

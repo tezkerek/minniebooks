@@ -1,6 +1,6 @@
 import Head from "next/head";
-import Book from "@/entities/book";
-import Author from "@/entities/author";
+import { BriefBook } from "@/entities/book";
+import { Author } from "@/entities/author";
 import { useRouter } from "next/router";
 import { css } from "@emotion/react";
 import Navbar from "@/components/Navbar";
@@ -8,22 +8,6 @@ import AuthorDetail from "@/components/AuthorDetail";
 import BookGrid from "@/components/BookGrid";
 import { useAuthor } from "@/api/author";
 
-const mockWrittenBooks: Array<Book> = [
-  {
-    id: 0,
-    title: "I got reincarnated as a...",
-    authors: [{id: 1, fullName: "John Doe"}],
-    rating: 3,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 1,
-    title: "Saving gold in another world for my retirement",
-    authors: [{id: 2, fullName: "Dr. Stone"}],
-    rating: 4.25,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-];
 export default function BookDetailPage() {
   const router = useRouter();
   const { id } = router.query as { id?: string };
@@ -50,7 +34,7 @@ export default function BookDetailPage() {
       >
         {isLoading ? "Loading" : <AuthorDetail author={author as Author} />}
         <p css={titleCss}>Books</p>
-        <BookGrid books={mockWrittenBooks} />
+        {isLoading ? "Loading" : <BookGrid books={author?.books as Array<BriefBook>} />}
       </main>
     </>
   );

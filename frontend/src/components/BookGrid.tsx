@@ -1,6 +1,6 @@
 import Link from "next/link";
 import styled from "@emotion/styled";
-import Book from "@/entities/book";
+import { BriefBook } from "@/entities/book";
 import BookItem from "@/components/BookItem";
 
 const Grid = styled.div`
@@ -22,5 +22,5 @@ export default function BookGrid({ books }: BookGridProps) {
 }
 
 interface BookGridProps {
-    books: Array<Book>
+    books: Array<BriefBook>
 }

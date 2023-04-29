@@ -1,13 +1,27 @@
-import Author from "./author"
+import { BriefAuthor } from "./author"
 import Review from "./review"
 
-export default interface Book {
-    id: number
-    title: string
-    authors: Array<Author>
-    rating: number
-    coverImageUrl: string
-    reviews: Array<Review>
+export class BriefBook {
+    constructor(
+        public id: number,
+        public title: string,
+        public authors: Array<BriefAuthor>,
+        public rating: number,
+        public coverImageUrl: string,
+    ) { }
+}
+
+export class Book extends BriefBook {
+    constructor(
+        id: number,
+        title: string,
+        authors: Array<BriefAuthor>,
+        rating: number,
+        coverImageUrl: string,
+        public reviews: Array<Review>,
+    ) {
+        super(id, title, authors, rating, coverImageUrl)
+    }
 }
 
 export type Publisher = string;

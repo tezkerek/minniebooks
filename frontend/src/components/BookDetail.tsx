@@ -1,10 +1,10 @@
 import Link from "next/link"
 import { css } from "@emotion/react"
-import Book from "@/entities/book"
+import { BriefBook } from "@/entities/book"
 import Button from "./Button"
 
 interface BookDetailProps {
-    book: Book
+    book: BriefBook
 }
 
 export default function BookDetail({ book }: BookDetailProps) {

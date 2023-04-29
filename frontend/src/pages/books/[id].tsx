@@ -4,7 +4,7 @@ import { css } from "@emotion/react"
 import BookDetail from "@/components/BookDetail"
 import Navbar from "@/components/Navbar"
 import ReviewList from "@/components/ReviewList"
-import Book from "@/entities/book"
+import { Book } from "@/entities/book"
 import Review from "@/entities/review"
 import { useBook } from "@/api/book"
 

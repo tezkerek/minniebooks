@@ -1,10 +1,10 @@
 import { css } from "@emotion/react"
 import styled from "@emotion/styled"
-import Book from "@/entities/book"
+import { BriefBook } from "@/entities/book"
 import StarRating from "./StarRating"
 
 interface BookItemProps {
-    book: Book
+    book: BriefBook
 }
 
 const Item = styled.div`
