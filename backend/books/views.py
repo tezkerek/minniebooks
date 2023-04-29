@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -35,7 +36,11 @@ class BookViewSet(
     /api/books/?min_year=2000&max_year=2020&search=dune+messiah
     """
 
-    queryset = Book.objects.prefetch_related("reviews__reader").all()
+    queryset = (
+        Book.objects.prefetch_related("reviews__reader")
+        .annotate(rating=Avg(("reviews__stars")))
+        .all()
+    )
     serializer_class = BookSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]

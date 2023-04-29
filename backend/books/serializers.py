@@ -1,4 +1,9 @@
-from rest_framework.serializers import ModelSerializer, IntegerField, CharField
+from rest_framework.serializers import (
+    ModelSerializer,
+    IntegerField,
+    FloatField,
+    CharField,
+)
 from .models import (
     Book,
     Review,
@@ -55,6 +60,7 @@ class AuthorSerializer(ModelSerializer):
 
 
 class BookSerializer(ModelSerializer):
+    rating = FloatField()
     authors = AuthorBriefSerializer(many=True)
     reviews = ReviewSerializer(many=True)
 
@@ -66,6 +72,7 @@ class BookSerializer(ModelSerializer):
             "publisher",
             "year",
             "book_cover",
+            "rating",
             "reviews",
             "authors",
             "recommendations",
