@@ -51,8 +51,11 @@ class BookViewSet(
         # Filter by year
         min_year = self.request.query_params.get('min_year')
         max_year = self.request.query_params.get('max_year')
-        if min_year and max_year:
-            queryset = queryset.filter(year__range=(min_year, max_year))
+        if min_year is None:
+            min_year = 0
+        if max_year is None:
+            max_year = 1e9
+        queryset = queryset.filter(year__range=(min_year, max_year))
 
         # Examples:
         # api/books/?publisher="misu2"&publisher="misu"&min_rating=3.5
