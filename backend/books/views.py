@@ -1,6 +1,8 @@
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework import filters
+from django.db.models import Avg
 from .models import (
     Author,
     Book,
@@ -25,11 +27,44 @@ from .serializers import (
 class BookViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAdminOrReadOnly]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ['title']  # Books that contain given string - example: books/?search=meow
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Filter by publishers
+        publishers = self.request.query_params.getlist('publisher')
+        if publishers:
+            queryset = queryset.filter(publisher__in=publishers)
+
+        # Filter by minimum rating
+        min_rating = self.request.query_params.get('min_rating')
+        if min_rating:
+            queryset = queryset.annotate(ratio=Avg('reviews__stars')).filter(ratio__gte=float(min_rating))
+
+        # Filter by year
+        min_year = self.request.query_params.get('min_year')
+        max_year = self.request.query_params.get('max_year')
+        if min_year and max_year:
+            queryset = queryset.filter(year__range=(min_year, max_year))
+
+        # Examples:
+        # api/books/?publisher="misu2"&publisher="misu"&min_rating=3.5
+        # api/books/?min_year=2000&max_year=2020&publisher="misu"&min_rating=4.5
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def search(self, request):
         query = request.GET.get("query", "")
