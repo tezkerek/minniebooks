@@ -2,12 +2,19 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 from users.models import MinnieBooksUser
 
+class Author(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    description = models.CharField(max_length=2048)
+    picture = models.FileField(upload_to="files/authors")
+
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
     publisher = models.CharField(max_length=100)
     year = models.IntegerField(null=True, blank=True)
     book_cover = models.FileField(upload_to="files/bookcovers", null=True, blank=True)
+    authors = models.ManyToManyField(Author, related_name="books")
 
 
 class Review(models.Model):
@@ -69,11 +76,3 @@ class BookRecommandation(models.Model):
         MinnieBooksUser, on_delete=models.CASCADE, related_name="recommendations"
     )
     sender = models.ForeignKey(MinnieBooksUser, on_delete=models.CASCADE)
-
-
-class Author(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    description = models.CharField(max_length=2048)
-    picture = models.FileField(upload_to="files/authors")
-    books = models.ManyToManyField(Book, related_name="authors")
