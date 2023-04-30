@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import filters
 from rest_framework.decorators import action
 from django.db.models import Q
+from django.db.models import Avg
 
 from .serializers import BookSerializer, ReviewSerializer, AuthorSerializer, QuoteSerializer, ProgressUpdateSerializer, LikeDislikeSerializer, BookRecommandationSerializer
 from .models import Book, Review, Author, Quote, ProgressUpdate, LikeDislike, BookRecommandation
@@ -25,35 +26,31 @@ class BookViewSet(mixins.ListModelMixin,
         queryset = super().get_queryset()
 
         # Filter by publishers
-        # Example: books/by-publisher/?publisher="misu2"&publisher="misu"
-        if self.action == 'list_by_publisher':
-            publishers = self.request.query_params.getlist('publisher')
-            if publishers:
-                queryset = queryset.filter(publisher__in=publishers)
+        publishers = self.request.query_params.getlist('publisher')
+        if publishers:
+            queryset = queryset.filter(publisher__in=publishers)
 
-        # tre sa testez asta
         # Filter by minimum rating
-        # min_rating = self.request.query_params.get('min_rating')
-        # if min_rating:
-        #     queryset = queryset.annotate(total_stars=Sum('reviews__stars')).filter(total_stars__gte=min_rating)
+        min_rating = self.request.query_params.get('min_rating')
+        if min_rating:
+            queryset = queryset.annotate(ratio=Avg('reviews__stars')).filter(ratio__gte=float(min_rating))
 
         # Filter by year
-        # Example: books/by-year/?min_year=2010&max_year=2030
-        if self.action == 'list_by_year':
-            min_year = self.request.query_params.get('min_year')
-            max_year = self.request.query_params.get('max_year')
-            if min_year and max_year:
-                queryset = queryset.filter(year__range=(min_year, max_year))
+        min_year = self.request.query_params.get('min_year')
+        max_year = self.request.query_params.get('max_year')
+        if min_year and max_year:
+            queryset = queryset.filter(year__range=(min_year, max_year))
+
+        # Examples:
+        # api/books/?publisher="misu2"&publisher="misu"&min_rating=3.5
+        # api/books/?min_year=2000&max_year=2020&publisher="misu"&min_rating=4.5
 
         return queryset
 
-    @action(detail=False, methods=['get'], url_path='by-publisher')
-    def list_by_publisher(self, request):
-        return self.list(request)
-
-    @action(detail=False, methods=['get'], url_path='by-year')
-    def list_by_year(self, request):
-        return self.list(request)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def search(self, request):
         query = request.GET.get('query', '')
