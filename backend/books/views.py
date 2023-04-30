@@ -27,7 +27,6 @@ from .serializers import (
 class BookViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = Book.objects.all()
