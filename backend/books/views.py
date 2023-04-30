@@ -18,7 +18,8 @@ class BookViewSet(mixins.ListModelMixin,
                   viewsets.GenericViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ['title']       # Books that contain given string - example: books/?search=meow
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -29,6 +30,12 @@ class BookViewSet(mixins.ListModelMixin,
             publishers = self.request.query_params.getlist('publisher')
             if publishers:
                 queryset = queryset.filter(publisher__in=publishers)
+
+        # tre sa testez asta
+        # Filter by minimum rating
+        # min_rating = self.request.query_params.get('min_rating')
+        # if min_rating:
+        #     queryset = queryset.annotate(total_stars=Sum('reviews__stars')).filter(total_stars__gte=min_rating)
 
         # Filter by year
         # Example: books/by-year/?min_year=2010&max_year=2030

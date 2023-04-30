@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "books",
     "users",
     "rest_framework",
-    "rest_framework_filters"
+    # "rest_framework_filters"
 ]
 
 MIDDLEWARE = [
