@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { css } from "@emotion/react";
 import Review from "@/entities/review";
 import StarRating from "./StarRating";
 
@@ -10,8 +12,12 @@ export default function ReviewList({ reviews }: ReviewListProps) {
         <div>
             {reviews.map(review =>
                 <div key={review.id}>
-                    <StarRating rating={review.rating} />
-                    {review.authorUsername}
+                    <p css={css`display: flex; align-items: center;`}>
+                        <StarRating rating={review.rating} />
+                        <Link href={`/users/${review.authorId}`} css={css`margin-left: 5px;`}>
+                            {review.authorUsername}
+                        </Link>
+                    </p>
                     <p>{review.text}</p>
                 </div>
             )}

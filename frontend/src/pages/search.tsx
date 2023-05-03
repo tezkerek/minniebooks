@@ -4,85 +4,11 @@ import Slider from "@mui/material/Slider";
 import { Publisher } from "@/entities/book";
 import Head from "next/head";
 import Navbar from "@/components/Navbar";
-import Book from "@/entities/book";
 import PublisherFilter from "@/components/PublisherFilter";
 import { useState } from "react";
 import BookGrid from "@/components/BookGrid";
 
 const mockPublishers: Array<Publisher> = ["Alcatel", "Briceag", "Babadag"];
-
-const mockBooks: Array<Book> = [
-  {
-    id: 0,
-    title: "I got reincarnated as a...",
-    author: "John Doe",
-    rating: 3,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 1,
-    title: "Saving gold for my rretirem",
-    author: "Me",
-    rating: 4.25,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 0,
-    title: "I got reincarnated as a...",
-    author: "John Doe",
-    rating: 3,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 1,
-    title: "Saving gold for my rretirem",
-    author: "Me",
-    rating: 4.25,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 0,
-    title: "I got reincarnated as a...",
-    author: "John Doe",
-    rating: 3,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 1,
-    title: "Saving gold for my rretirem",
-    author: "Me",
-    rating: 4.25,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 0,
-    title: "I got reincarnated as a...",
-    author: "John Doe",
-    rating: 3,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 1,
-    title: "Saving gold for my rretirem",
-    author: "Me",
-    rating: 4.25,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 0,
-    title: "I got reincarnated as a...",
-    author: "John Doe",
-    rating: 3,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-  {
-    id: 1,
-    title: "Saving gold for my rretirem",
-    author: "Me",
-    rating: 4.25,
-    coverImageUrl: "https://edit.org/images/cat/book-covers-big-2019101610.jpg",
-  },
-];
 
 const MIN_BOOK_YEAR = 1500;
 const MAX_BOOK_YEAR = 2023;
@@ -167,7 +93,7 @@ export default function SearchPage() {
             </p>
           </div>
           <div className={styles.results}>
-            <BookGrid books={mockBooks} />
+            <BookGrid books={[]} />
           </div>
         </div>
       </main>

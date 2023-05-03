@@ -1,12 +1,18 @@
 import { css } from "@emotion/react";
 import User from "@/entities/user";
 import Button from "./Button";
+import { useCurrentUser } from "@/api/user";
 
 interface UserDetailProps {
   user: User;
 }
 
 export default function UserDetail({ user }: UserDetailProps) {
+  let { user: currentUser, error, isLoading } = useCurrentUser()
+  isLoading = isLoading || typeof currentUser === "undefined"
+
+  const isFriend = currentUser ? user.id in currentUser.friends : false
+
   return (
     <div css={mainCss}>
       <img
@@ -17,14 +23,14 @@ export default function UserDetail({ user }: UserDetailProps) {
       />
 
       <div css={detailsCss}>
-        <p css={titleCss}>{`${user.firstName} ${user.lastName}`}</p>
+        <p css={titleCss}>{`${user.fullName}`}</p>
 
         <div
           css={css`
             margin-top: 10px;
           `}
         >
-          {user.isFriend ? (
+          {isFriend ? (
             <Button onClick={console.log}>Remove friend</Button>
           ) : (
             <Button onClick={console.log}>Add friend</Button>
