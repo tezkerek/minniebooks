@@ -7,7 +7,7 @@ from django.db.models import Avg
 from .models import (
     Author,
     Book,
-    BookRecommandation,
+    BookRecommendation,
     LikeDislike,
     ProgressUpdate,
     Quote,
@@ -146,6 +146,5 @@ class BookRecommendationViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = BookRecommandation.objects.all()
     serializer_class = BookRecommendationSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]

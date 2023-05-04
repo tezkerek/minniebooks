@@ -67,7 +67,7 @@ class Quote(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="quotes")
 
 
-class BookRecommandation(models.Model):
+class BookRecommendation(models.Model):
     message = models.CharField(max_length=512)
     book = models.ForeignKey(
         Book, on_delete=models.CASCADE, related_name="recommendations"
