@@ -107,3 +107,4 @@ class BookRecommendationSerializer(ModelSerializer):
     class Meta:
         model = BookRecommendation
         fields = ["id", "message", "book", "receiver", "sender"]
+        read_only_fields = ["sender"]
