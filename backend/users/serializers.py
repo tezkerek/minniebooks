@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MinnieBooksUser
+from .models import MinnieBooksUser, FriendRequest
 from django.contrib.auth import authenticate
 
 
@@ -15,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "date_joined",
             "profile_picture",
+            "friends",
             "reviews",
             "is_admin",
             "is_employee",
@@ -69,3 +70,28 @@ class LoginSerializer(serializers.Serializer):
                 )
         else:
             raise serializers.ValidationError('Must include "email" and "password".')
+
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FriendRequest
+        fields = ["id", "sender", "receiver"]
+        read_only_fields = ["id", "sender"]
+
+    def validate_receiver(self, instance):
+        user = self.context["request"].user
+        if instance == user:
+            raise serializers.ValidationError(
+                "You cannot send a friend request to yourself"
+            )
+        if user.friends.filter(pk=self.initial_data["receiver"]).exists():
+            raise serializers.ValidationError(
+                "The receiver is already a friend of the user."
+            )
+        return instance
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MinnieBooksUser
+        fields = ["id", "first_name", "last_name", "profile_picture"]
