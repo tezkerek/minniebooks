@@ -1,13 +1,13 @@
 from django.db.models import Avg
 from rest_framework import mixins, viewsets
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import filters
 from django.db.models import Avg
 from .models import (
     Author,
     Book,
-    BookRecommandation,
+    BookRecommendation,
     LikeDislike,
     ProgressUpdate,
     Quote,
@@ -146,6 +146,11 @@ class BookRecommendationViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = BookRecommandation.objects.all()
     serializer_class = BookRecommendationSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return BookRecommendation.objects.filter(receiver=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)

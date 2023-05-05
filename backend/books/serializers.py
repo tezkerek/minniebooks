@@ -10,7 +10,7 @@ from .models import (
     Author,
     Quote,
     ProgressUpdate,
-    BookRecommandation,
+    BookRecommendation,
     LikeDislike,
 )
 
@@ -105,5 +105,6 @@ class LikeDislikeSerializer(ModelSerializer):
 
 class BookRecommendationSerializer(ModelSerializer):
     class Meta:
-        model = BookRecommandation
+        model = BookRecommendation
         fields = ["id", "message", "book", "receiver", "sender"]
+        read_only_fields = ["sender"]
