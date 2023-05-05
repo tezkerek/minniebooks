@@ -4,6 +4,8 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Navbar from "@/components/Navbar";
 import { useState } from "react";
+import { login } from "@/api/auth";
+import { useRouter } from "next/router";
 
 const emailValidation: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
@@ -13,6 +15,8 @@ export default function LoginPage(): JSX.Element {
 
   const emailGood: boolean = emailValidation.test(email);
   const passwordGood: boolean = password != "";
+
+  const router = useRouter();
 
   return (
     <>
@@ -55,7 +59,9 @@ export default function LoginPage(): JSX.Element {
         <Button
           disabled={!(emailGood && passwordGood)}
           onClick={(): void => {
-            console.log(email, password);
+            login(email, password)
+              .then(() => router.push("/"))
+              .catch((err) => alert(JSON.stringify(err)));
           }}
         >
           Login
