@@ -40,6 +40,7 @@ class MinnieBooksUser(AbstractBaseUser):
     email = models.EmailField(verbose_name="email address", max_length=255, unique=True)
     date_joined = models.DateTimeField(default=timezone.now)
     profile_picture = models.FileField(upload_to="files/pictures", null=True)
+    friends = models.ManyToManyField("self")
     is_admin = models.BooleanField(default=False)
     is_employee = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -63,7 +64,23 @@ class MinnieBooksUser(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-    
+
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class FriendRequest(models.Model):
+    sender = models.ForeignKey(
+        MinnieBooksUser, on_delete=models.CASCADE, related_name="sent_friend_requests"
+    )
+    receiver = models.ForeignKey(
+        MinnieBooksUser,
+        on_delete=models.CASCADE,
+        related_name="received_friend_requests",
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["sender", "receiver"], name="unique_friend_request")
+        ]
