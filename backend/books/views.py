@@ -91,6 +91,9 @@ class ReviewViewSet(
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def perform_create(self, serializer):
+        serializer.save(reader=self.request.user)
+
 
 class AuthorViewSet(
     mixins.ListModelMixin,

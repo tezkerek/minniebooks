@@ -30,7 +30,7 @@ class ReviewSerializer(ModelSerializer):
             "author_id",
             "author_username",
         ]
-        read_only_fields = ["id", "book", "likes"]
+        read_only_fields = ["id", "likes"]
 
 
 class AuthorBriefSerializer(ModelSerializer):
