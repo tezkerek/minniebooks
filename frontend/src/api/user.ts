@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import fetcher from './fetcher'
+import { fetcher } from './fetcher'
 import User from '@/entities/user'
 
 export function useUser(id: string | null) {

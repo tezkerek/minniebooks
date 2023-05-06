@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import fetcher from './fetcher'
+import { fetcher } from './fetcher'
 import { BriefAuthor, Author } from '@/entities/author'
 import { JsonBriefBook, parseBriefBook } from './book'
 
