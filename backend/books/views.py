@@ -1,4 +1,4 @@
-from django.db.models import Avg, Q, Exists, OuterRef
+from django.db.models import Avg, Q, Exists, OuterRef, Sum, Prefetch
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
@@ -37,19 +37,22 @@ class BookViewSet(
     /api/books/?min_year=2000&max_year=2020&search=dune+messiah
     """
 
-    queryset = (
-        Book.objects.prefetch_related("reviews__reader")
-        .annotate(rating=Avg(("reviews__stars")))
-        .all()
-    )
     serializer_class = BookSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     search_fields = ["title"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        # Annotate each review with its votes
+        reviews_queryset = Review.objects.prefetch_related("reader", "votes").annotate(
+            likes=Sum("votes__value", default=0)
+        )
 
+        queryset = Book.objects.prefetch_related(
+            Prefetch("reviews", queryset=reviews_queryset)
+        ).annotate(rating=Avg("reviews__stars"))
+
+        # Filter by status
         status = self.request.query_params.get("status")
         if status:
             user = self.request.query_params.get("user")
@@ -124,7 +127,9 @@ class ReviewViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = Review.objects.all()
+    queryset = Review.objects.prefetch_related("votes").annotate(
+        likes=Sum("votes__value", default=0)
+    )
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
