@@ -2,6 +2,7 @@ import Link from "next/link"
 import { css } from "@emotion/react"
 import { BriefBook } from "@/entities/book"
 import Button from "./Button"
+import AuthGuard from "./AuthGuard"
 
 interface BookDetailProps {
     book: BriefBook
@@ -28,9 +29,11 @@ export default function BookDetail({ book }: BookDetailProps) {
                 <p css={titleCss}>{book.title}</p>
                 <p css={authorCss}>{book.authors.length ? <>by {authorNames}</> : <i>unknown author</i>}</p>
 
-                <div css={css`margin-top: 10px;`}>
-                    <Button onClick={console.log}>Recommend</Button>
-                </div>
+                <AuthGuard>
+                    <div css={css`margin-top: 10px;`}>
+                        <Button onClick={console.log}>Recommend</Button>
+                    </div>
+                </AuthGuard>
             </div>
         </div>
     )
