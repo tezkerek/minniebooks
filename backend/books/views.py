@@ -1,4 +1,4 @@
-from django.db.models import Avg
+from django.db.models import Avg, Exists, OuterRef
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
@@ -69,6 +69,12 @@ class BookViewSet(
         max_year = self.request.query_params.get("max_year")
         if max_year:
             queryset = queryset.filter(year__lte=max_year)
+
+        if self.request.user.is_authenticated:
+            # For each book, indicate if it's rated by the current user
+            queryset = queryset.annotate(
+                is_rated=Exists(self.request.user.reviews.filter(book=OuterRef("id")))
+            )
 
         return queryset
 

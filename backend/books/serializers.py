@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     IntegerField,
     FloatField,
     CharField,
+    BooleanField,
 )
 from rest_framework.exceptions import ValidationError
 from .models import (
@@ -70,6 +71,7 @@ class BookSerializer(ModelSerializer):
     rating = FloatField()
     authors = AuthorBriefSerializer(many=True)
     reviews = ReviewSerializer(many=True)
+    is_rated = BooleanField(required=False)
 
     class Meta:
         model = Book
@@ -81,6 +83,7 @@ class BookSerializer(ModelSerializer):
             "book_cover",
             "rating",
             "reviews",
+            "is_rated",
             "authors",
             "recommendations",
             "quotes",
