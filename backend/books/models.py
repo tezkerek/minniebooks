@@ -1,6 +1,7 @@
 from django.db import models
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, UniqueConstraint, Q
 from users.models import MinnieBooksUser
+
 
 class Author(models.Model):
     first_name = models.CharField(max_length=50)
@@ -29,7 +30,8 @@ class Review(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(stars__gte=0) & Q(stars__lte=5), name="verifyValidStars"
-            )
+            ),
+            UniqueConstraint(fields=("reader", "book"), name="unique_review"),
         ]
 
 
