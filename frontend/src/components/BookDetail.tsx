@@ -1,14 +1,20 @@
+import { useState } from "react"
 import Link from "next/link"
 import { css } from "@emotion/react"
 import { BriefBook } from "@/entities/book"
+import { recommendBook } from "@/api/friend"
+import { BookRecommendation } from "@/components/BookRecommendationEditor"
 import Button from "./Button"
 import AuthGuard from "./AuthGuard"
+import BookRecommendationEditorDialog from "./BookRecommendationEditorDialog"
 
 interface BookDetailProps {
     book: BriefBook
 }
 
 export default function BookDetail({ book }: BookDetailProps) {
+    const [isFriendSelectorOpen, toggleFriendSelector] = useState<boolean>(false)
+
     const authorNames = book.authors
         .map((author) => (
             <Link key={author.id} href={`/authors/${author.id}`}>
@@ -31,7 +37,23 @@ export default function BookDetail({ book }: BookDetailProps) {
 
                 <AuthGuard>
                     <div css={css`margin-top: 10px;`}>
-                        <Button onClick={console.log}>Recommend</Button>
+                        <Button
+                            onClick={(): void => {
+                                toggleFriendSelector(true)
+                            }}
+                        >
+                            Recommend
+                        </Button>
+                        <BookRecommendationEditorDialog
+                            open={isFriendSelectorOpen}
+                            onClose={() => {
+                                toggleFriendSelector(false)
+                            }}
+                            onDone={({ friend, message }: BookRecommendation): void => {
+                                recommendBook(message, book.id, friend.id)
+                                toggleFriendSelector(false)
+                            }}
+                        />
                     </div>
                 </AuthGuard>
             </div>

@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import fetcher from './fetcher'
+import { fetcher } from './fetcher'
 import Review from '@/entities/review'
 
 export interface JsonReview {
