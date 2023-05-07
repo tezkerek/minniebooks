@@ -1,8 +1,9 @@
-from django.db.models import Avg, Exists, OuterRef
+from django.db.models import Avg, Q, Exists, OuterRef
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import filters
+from rest_framework.decorators import action
 from django.db.models import Avg
 from .models import (
     Author,
@@ -18,6 +19,7 @@ from .serializers import (
     AuthorSerializer,
     BookRecommendationSerializer,
     BookSerializer,
+    BookBriefSerializer,
     LikeDislikeSerializer,
     ProgressUpdateSerializer,
     QuoteSerializer,
@@ -47,7 +49,11 @@ class BookViewSet(
     search_fields = ["title"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        status = self.request.query_params.get("status")
+        if status:
+            return self.get_books_by_status(self.request, status)
+        else:
+            queryset = super().get_queryset()
 
         # Filter by publishers
         publishers = self.request.query_params.getlist("publisher")
@@ -77,6 +83,29 @@ class BookViewSet(
             )
 
         return queryset
+
+    def get_books_by_status(self, request, status):
+        reader_id = self.request.query_params.get("user")
+        reader_book_ids = ProgressUpdate.objects.filter(reader=reader_id).values("book")
+        finished_book_ids = reader_book_ids.filter(status="F").values("book").distinct()
+        reading_book_ids = (
+            reader_book_ids.filter(Q(status="R") | Q(status="S"))
+            .values("book")
+            .distinct()
+        )
+
+        if status == "finished":
+            selected_books = Book.objects.filter(id__in=finished_book_ids).annotate(
+                rating=Avg(("reviews__stars"))
+            )
+        elif status == "reading":
+            selected_books = (
+                Book.objects.filter(id__in=reading_book_ids)
+                .exclude(id__in=finished_book_ids)
+                .annotate(rating=Avg(("reviews__stars")))
+            )
+
+        return selected_books
 
     def search(self, request):
         query = request.GET.get("query", "")
@@ -129,11 +158,9 @@ class QuoteViewSet(
 class ProgressUpdateViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = ProgressUpdate.objects.all()
     serializer_class = ProgressUpdateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -143,6 +170,7 @@ class ProgressUpdateViewSet(
 
     def perform_create(self, serializer):
         serializer.save(reader=self.request.user)
+
 
 class LikeDislikeViewSet(
     mixins.ListModelMixin,
