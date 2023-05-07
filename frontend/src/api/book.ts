@@ -5,12 +5,16 @@ import { JsonBriefAuthor, parseBriefAuthor } from './author'
 import { JsonReview, parseReview } from './review'
 
 export function useBook(id: string | null) {
-    const { data, error, isLoading } = useSWR<JsonBook, any>(id ? `/api/books/${id}/` : null, authFetcher)
+    const { data, error, isLoading, mutate } = useSWR<JsonBook, any>(
+        id ? `/api/books/${id}/` : null,
+        authFetcher
+    )
 
     return {
         book: data ? parseBook(data) : data,
         error,
-        isLoading
+        isLoading,
+        mutate,
     }
 }
 

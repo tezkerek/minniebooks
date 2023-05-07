@@ -1,6 +1,11 @@
 import useSWR from 'swr'
 import { fetcher } from './fetcher'
+import { post } from './requests'
 import Review from '@/entities/review'
+
+export async function postReview(rating: number, text: string, bookId: number) {
+    return post('reviews/', { stars: rating, message: text, book: bookId })
+}
 
 export interface JsonReview {
     id: number
