@@ -137,6 +137,12 @@ class ProgressUpdateViewSet(
     serializer_class = ProgressUpdateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        reader_id = self.request.query_params.get("reader")
+        return ProgressUpdate.objects.filter(reader=reader_id)
+
+    def perform_create(self, serializer):
+        serializer.save(reader=self.request.user)
 
 class LikeDislikeViewSet(
     mixins.ListModelMixin,
