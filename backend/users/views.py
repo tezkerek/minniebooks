@@ -14,12 +14,12 @@ from rest_framework.status import (
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 
-from .models import MinnieBooksUser, FriendRequest
+from .models import MinnieBooksUser, Friendship
 from .serializers import (
     UserSerializer,
     RegisterSerializer,
     LoginSerializer,
-    FriendRequestSerializer,
+    FriendshipSerializer,
     FriendSerializer,
 )
 from books.permissions import IsAdminOrReadOnly
@@ -73,28 +73,31 @@ class FriendsViewSet(
 
     def get_queryset(self):
         user = self.request.user
-        friends = user.friends.all()
-        return friends
+        return MinnieBooksUser.objects.get_friends(user)
 
     def perform_destroy(self, instance):
         user = self.request.user
-        instance.friends.remove(user)
-        user.friends.remove(instance)
+        friendship = Friendship.objects.filter(Q(receiver=user, sender = instance) | Q(receiver=instance, sender = user))
+        if friendship.exists():
+            friendship.delete()
+        else:
+            raise ValidationError("Friendship not found!")
 
 
-class FriendRequestViewSet(
+class FriendshipViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    serializer_class = FriendRequestSerializer
+    serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         request_type = self.request.query_params.get("type", None)
-        queryset = FriendRequest.objects.filter(Q(sender=user) | Q(receiver=user))
+        queryset = Friendship.objects.filter(Q(sender=user) | Q(receiver=user), status = Friendship.PENDING)
         if request_type == "sent":
             queryset = queryset.filter(sender=user)
         elif request_type == "received":
@@ -102,15 +105,19 @@ class FriendRequestViewSet(
         return queryset
 
     def perform_create(self, serializer):
-        user = self.request.user
-        receiver = serializer.validated_data["receiver"]
-        reverse_request = FriendRequest.objects.filter(receiver=user, sender=receiver)
-        if reverse_request.exists():
-            reverse_request.delete()
-            receiver.friends.add(user)
-            user.friends.add(receiver)
+        try:
+            serializer.save(sender=self.request.user, status=Friendship.PENDING)
+        except IntegrityError as e:
+            print(e)
+            raise ValidationError("Friendship already exists.")
+
+    def update(self, request, pk=None):
+        instance = self.get_object()
+        user = request.user
+        if user.id == instance.receiver_id:
+            instance.status = Friendship.ACCEPTED
         else:
-            try:
-                serializer.save(sender=self.request.user)
-            except IntegrityError:
-                raise ValidationError("Friend request already exists.")
+            raise ValidationError("Cannot accept this request.")
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

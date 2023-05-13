@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Q, Value
+from django.db.models.functions import Concat, Greatest, Least, Cast
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils import timezone
 
@@ -33,6 +35,13 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def get_friends(self, user):
+        return self.model.objects.filter(
+            Q(received_friendships__status=Friendship.ACCEPTED)
+            | Q(sent_friendships__status=Friendship.ACCEPTED),
+            Q(received_friendships__sender=user) | Q(sent_friendships__receiver=user),
+        )
+
 
 class MinnieBooksUser(AbstractBaseUser):
     first_name = models.CharField(max_length=50)
@@ -40,7 +49,6 @@ class MinnieBooksUser(AbstractBaseUser):
     email = models.EmailField(verbose_name="email address", max_length=255, unique=True)
     date_joined = models.DateTimeField(default=timezone.now)
     profile_picture = models.FileField(upload_to="files/pictures", null=True)
-    friends = models.ManyToManyField("self")
     is_admin = models.BooleanField(default=False)
     is_employee = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -70,17 +78,29 @@ class MinnieBooksUser(AbstractBaseUser):
         return f"{self.first_name} {self.last_name}"
 
 
-class FriendRequest(models.Model):
+class Friendship(models.Model):
     sender = models.ForeignKey(
-        MinnieBooksUser, on_delete=models.CASCADE, related_name="sent_friend_requests"
+        MinnieBooksUser, on_delete=models.CASCADE, related_name="sent_friendships"
     )
     receiver = models.ForeignKey(
         MinnieBooksUser,
         on_delete=models.CASCADE,
-        related_name="received_friend_requests",
+        related_name="received_friendships",
     )
+
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
+    STATUS_CHOICES = [(PENDING, "Pending"), (ACCEPTED, "Accepted")]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["sender", "receiver"], name="unique_friend_request")
+            models.UniqueConstraint(
+                Concat(
+                    Cast(Least("receiver", "sender"), models.CharField()),
+                    Value("_"),
+                    Cast(Greatest("receiver", "sender"), models.CharField()),
+                ),
+                name="unique_friendship",
+            )
         ]

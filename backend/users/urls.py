@@ -4,14 +4,14 @@ from .views import (
     UserViewSet,
     RegisterAPIView,
     LoginAPIView,
-    FriendRequestViewSet,
-    FriendsViewSet
+    FriendshipViewSet,
+    FriendsViewSet,
 )
 
 router = DefaultRouter()
 router.register("users", UserViewSet, basename="user")
 router.register("friends", FriendsViewSet, basename="friend")
-router.register("friend-requests", FriendRequestViewSet, basename="friend-request")
+router.register("friend-requests", FriendshipViewSet, basename="friend-request")
 
 
 urlpatterns = [
