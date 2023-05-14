@@ -77,7 +77,9 @@ class FriendsViewSet(
 
     def perform_destroy(self, instance):
         user = self.request.user
-        friendship = Friendship.objects.filter(Q(receiver=user, sender = instance) | Q(receiver=instance, sender = user))
+        friendship = Friendship.objects.filter(
+            Q(receiver=user, sender=instance) | Q(receiver=instance, sender=user)
+        )
         if friendship.exists():
             friendship.delete()
         else:
@@ -97,7 +99,9 @@ class FriendshipViewSet(
     def get_queryset(self):
         user = self.request.user
         request_type = self.request.query_params.get("type", None)
-        queryset = Friendship.objects.filter(Q(sender=user) | Q(receiver=user), status = Friendship.PENDING)
+        queryset = Friendship.objects.filter(
+            Q(sender=user) | Q(receiver=user), status=Friendship.PENDING
+        )
         if request_type == "sent":
             queryset = queryset.filter(sender=user)
         elif request_type == "received":
@@ -107,8 +111,7 @@ class FriendshipViewSet(
     def perform_create(self, serializer):
         try:
             serializer.save(sender=self.request.user, status=Friendship.PENDING)
-        except IntegrityError as e:
-            print(e)
+        except IntegrityError:
             raise ValidationError("Friendship already exists.")
 
     def update(self, request, pk=None):

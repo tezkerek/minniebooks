@@ -15,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "date_joined",
             "profile_picture",
-            "friends",
             "reviews",
             "is_admin",
             "is_employee",
