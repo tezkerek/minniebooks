@@ -3,7 +3,9 @@ from rest_framework.serializers import (
     IntegerField,
     FloatField,
     CharField,
+    BooleanField,
 )
+from rest_framework.exceptions import ValidationError
 from .models import (
     Book,
     Review,
@@ -30,7 +32,13 @@ class ReviewSerializer(ModelSerializer):
             "author_id",
             "author_username",
         ]
-        read_only_fields = ["id", "book", "likes"]
+        read_only_fields = ["id", "likes"]
+
+    def validate_book(self, book):
+        if self.context["request"].user.reviews.filter(book=book).exists():
+            raise ValidationError("You've already reviewed this book.")
+
+        return book
 
 
 class AuthorBriefSerializer(ModelSerializer):
@@ -63,6 +71,7 @@ class BookSerializer(ModelSerializer):
     rating = FloatField()
     authors = AuthorBriefSerializer(many=True)
     reviews = ReviewSerializer(many=True)
+    is_rated = BooleanField(required=False)
 
     class Meta:
         model = Book
@@ -74,6 +83,7 @@ class BookSerializer(ModelSerializer):
             "book_cover",
             "rating",
             "reviews",
+            "is_rated",
             "authors",
             "recommendations",
             "quotes",

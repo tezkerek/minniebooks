@@ -19,6 +19,7 @@ export class Book extends BriefBook {
         rating: number,
         coverImageUrl: string,
         public reviews: Array<Review>,
+        public is_rated?: Boolean,
     ) {
         super(id, title, authors, rating, coverImageUrl)
     }

@@ -1,16 +1,20 @@
 import useSWR from 'swr'
-import { fetcher } from './fetcher'
+import { authFetcher, fetcher } from './fetcher'
 import { Book, BriefBook } from '@/entities/book'
 import { JsonBriefAuthor, parseBriefAuthor } from './author'
 import { JsonReview, parseReview } from './review'
 
 export function useBook(id: string | null) {
-    const { data, error, isLoading } = useSWR<JsonBook, any>(id ? `/api/books/${id}/` : null, fetcher)
+    const { data, error, isLoading, mutate } = useSWR<JsonBook, any>(
+        id ? `/api/books/${id}/` : null,
+        authFetcher
+    )
 
     return {
         book: data ? parseBook(data) : data,
         error,
-        isLoading
+        isLoading,
+        mutate,
     }
 }
 
@@ -53,6 +57,7 @@ export interface JsonBook {
     rating: number
     book_cover: string
     reviews: Array<JsonReview>
+    is_rated?: Boolean
 }
 
 export function parseBook(json: JsonBook): Book {
@@ -63,5 +68,6 @@ export function parseBook(json: JsonBook): Book {
         json.rating,
         json.book_cover,
         json.reviews.map(parseReview),
+        json.is_rated,
     )
 }
