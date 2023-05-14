@@ -8,7 +8,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from .models import MinnieBooksUser, FriendRequest
+from .models import MinnieBooksUser, Friendship
 
 
 class UserCreationForm(forms.ModelForm):
@@ -87,6 +87,6 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(MinnieBooksUser, UserAdmin)
-admin.site.register(FriendRequest)
+admin.site.register(Friendship)
 
 admin.site.unregister(Group)
