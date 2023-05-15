@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate
 
 class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.FileField(required=False)
+    friendship_id = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
+    friendship_status = serializers.CharField(required=False, read_only=True)
 
     class Meta:
         model = MinnieBooksUser
@@ -23,6 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
             "quotes",
             "progress_updates",
             "likes",
+            "friendship_id",
+            "friendship_status",
         ]
         read_only_fields = ["id"]
 
