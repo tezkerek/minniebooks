@@ -48,11 +48,12 @@ class BookViewSet(
     search_fields = ["title"]
 
     def get_queryset(self):
+        queryset = super().get_queryset()
+
         status = self.request.query_params.get("status")
         if status:
-            return self.get_books_by_status(self.request, status)
-        else:
-            queryset = super().get_queryset()
+            user = self.request.user
+            queryset = self.get_books_by_status(user, queryset, status)
 
         # Filter by publishers
         publishers = self.request.query_params.getlist("publisher")
@@ -83,28 +84,34 @@ class BookViewSet(
 
         return queryset
 
-    def get_books_by_status(self, request, status):
-        reader_id = self.request.query_params.get("user")
-        reader_book_ids = ProgressUpdate.objects.filter(reader=reader_id).values("book")
-        finished_book_ids = reader_book_ids.filter(status="F").values("book").distinct()
+    def get_books_by_status(self, user, queryset, status):
+        print(user)
+        reader_book_ids = ProgressUpdate.objects.filter(reader=user).values("book")
+        finished_book_ids = (
+            reader_book_ids.filter(status=ProgressUpdate.FINISHED)
+            .values("book")
+            .distinct()
+        )
         reading_book_ids = (
-            reader_book_ids.filter(Q(status="R") | Q(status="S"))
+            reader_book_ids.filter(
+                Q(status=ProgressUpdate.READING) | Q(status=ProgressUpdate.STARTED)
+            )
             .values("book")
             .distinct()
         )
 
         if status == "finished":
-            selected_books = Book.objects.filter(id__in=finished_book_ids).annotate(
+            queryset = queryset.filter(id__in=finished_book_ids).annotate(
                 rating=Avg(("reviews__stars"))
             )
         elif status == "reading":
-            selected_books = (
-                Book.objects.filter(id__in=reading_book_ids)
+            queryset = (
+                queryset.filter(id__in=reading_book_ids)
                 .exclude(id__in=finished_book_ids)
                 .annotate(rating=Avg(("reviews__stars")))
             )
 
-        return selected_books
+        return queryset
 
     def search(self, request):
         query = request.GET.get("query", "")
@@ -165,6 +172,8 @@ class ProgressUpdateViewSet(
 
     def get_queryset(self):
         reader_id = self.request.query_params.get("reader")
+        if reader_id == "0":
+            reader_id = self.request.user.id
         return ProgressUpdate.objects.filter(reader=reader_id)
 
     def perform_create(self, serializer):
