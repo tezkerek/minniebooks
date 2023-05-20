@@ -27,6 +27,10 @@ export async function post(url: string, data: any) {
   return performRequest("POST", url, data);
 }
 
+export async function performPut(url: string, data: any) {
+  return performRequest("PUT", url, data);
+}
+
 export async function performDelete(url: string) {
   return performRequest("DELETE", url);
 }
