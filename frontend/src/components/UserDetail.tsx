@@ -1,19 +1,13 @@
 import { css } from "@emotion/react";
 import User from "@/entities/user";
-import Button from "./Button";
-import { useCurrentUser } from "@/api/user";
 import AuthGuard from "./AuthGuard";
+import FriendshipActionButton from "./FriendshipActionButton";
 
 interface UserDetailProps {
   user: User;
 }
 
 export default function UserDetail({ user }: UserDetailProps) {
-  let { user: currentUser, error, isLoading } = useCurrentUser();
-  isLoading = isLoading || typeof currentUser === "undefined";
-
-  const isFriend = currentUser ? user.id in currentUser.friends : false;
-
   return (
     <div css={mainCss}>
       <img
@@ -32,11 +26,7 @@ export default function UserDetail({ user }: UserDetailProps) {
           `}
         >
           <AuthGuard>
-            {isFriend ? (
-              <Button onClick={console.log}>Remove friend</Button>
-            ) : (
-              <Button onClick={console.log}>Add friend</Button>
-            )}
+            <FriendshipActionButton user={user} />
           </AuthGuard>
         </div>
       </div>
