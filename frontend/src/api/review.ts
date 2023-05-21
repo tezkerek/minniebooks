@@ -1,5 +1,3 @@
-import useSWR from 'swr'
-import { fetcher } from './fetcher'
 import { post } from './requests'
 import Review from '@/entities/review'
 
@@ -14,6 +12,7 @@ export interface JsonReview {
     book: number
     author_id: number
     author_username: string
+    likes: number
 }
 
 export function parseReview(json: JsonReview): Review {
@@ -23,5 +22,6 @@ export function parseReview(json: JsonReview): Review {
         rating: json.stars,
         authorId: json.author_id,
         authorUsername: json.author_username,
+        likes: json.likes,
     }
 }

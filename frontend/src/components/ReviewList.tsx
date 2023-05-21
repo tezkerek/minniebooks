@@ -19,8 +19,21 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                         </Link>
                     </p>
                     <p>{review.text}</p>
+                    <span css={likeCounterCss}>
+                        {review.likes} {review.likes == 1 ? "like" : "likes"}
+                    </span>
                 </div>
             )}
         </div>
     )
 }
+
+const likeCounterCss = css`
+    display: inline-block;
+    font-size: 0.9em;
+    color: #777777;
+    border: 1px solid #777777;
+    border-radius: 20px;
+    margin-top: 5px;
+    padding: 2px 5px;
+`
