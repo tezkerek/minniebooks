@@ -90,14 +90,12 @@ class BookViewSet(
         reader_book_ids = ProgressUpdate.objects.filter(reader=user).values("book")
         finished_book_ids = (
             reader_book_ids.filter(status=ProgressUpdate.FINISHED)
-            .values("book")
             .distinct()
         )
         reading_book_ids = (
             reader_book_ids.filter(
                 Q(status=ProgressUpdate.READING) | Q(status=ProgressUpdate.STARTED)
             )
-            .values("book")
             .distinct()
         )
 
