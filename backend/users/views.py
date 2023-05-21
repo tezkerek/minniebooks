@@ -61,6 +61,15 @@ class UserViewSet(
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if self.request.user.is_authenticated:
+            # Annotate friendship_status to each user in the queryset
+            queryset = Friendship.annotate_status(self.request.user, queryset)
+
+        return queryset
+
 
 class FriendsViewSet(
     mixins.ListModelMixin,

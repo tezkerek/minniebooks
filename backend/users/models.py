@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models import Q, Value
-from django.db.models.functions import Concat, Greatest, Least, Cast
+from django.db.models import Q, Value as V, Exists, Case, When, OuterRef
+from django.db.models.functions import Concat, Greatest, Least, Cast, Coalesce
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils import timezone
 
@@ -34,6 +34,9 @@ class UserManager(BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
+
+    def get_friendships(self, user):
+        return Friendship.objects.filter(Q(receiver=user) | Q(sender=user))
 
     def get_friends(self, user):
         return self.model.objects.filter(
@@ -98,9 +101,57 @@ class Friendship(models.Model):
             models.UniqueConstraint(
                 Concat(
                     Cast(Least("receiver", "sender"), models.CharField()),
-                    Value("_"),
+                    V("_"),
                     Cast(Greatest("receiver", "sender"), models.CharField()),
                 ),
                 name="unique_friendship",
             )
         ]
+
+    @classmethod
+    def annotate_status(cls, user, queryset):
+        """
+        Annotate a queryset of users with the friendship status
+        in relation to the given user.
+        """
+
+        def exists_friendship(is_outgoing: bool, status: str):
+            sender, receiver = (
+                (user, OuterRef("pk"))
+                if is_outgoing
+                else (
+                    OuterRef("pk"),
+                    user,
+                )
+            )
+            return Exists(
+                cls.objects.filter(sender=sender, receiver=receiver, status=status)
+            )
+
+        return queryset.annotate(
+            friendship_id=cls.objects.filter(
+                Q(sender=user, receiver=OuterRef("pk"))
+                | Q(sender=OuterRef("pk"), receiver=user)
+            ).values("pk"),
+            friendship_status=Coalesce(
+                Case(
+                    When(
+                        exists_friendship(False, cls.PENDING),
+                        then=V("INCOMING"),
+                    ),
+                    When(
+                        exists_friendship(False, cls.ACCEPTED),
+                        then=V("ACCEPTED"),
+                    ),
+                    When(
+                        exists_friendship(True, cls.PENDING),
+                        then=V("PENDING"),
+                    ),
+                    When(
+                        exists_friendship(True, cls.ACCEPTED),
+                        then=V("ACCEPTED"),
+                    ),
+                ),
+                V("NONE"),
+            ),
+        )
