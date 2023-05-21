@@ -52,7 +52,9 @@ class BookViewSet(
 
         status = self.request.query_params.get("status")
         if status:
-            user = self.request.user
+            user = self.request.query_params.get("user")
+            if user == "0" or user is None:
+                user = self.request.user
             queryset = self.get_books_by_status(user, queryset, status)
 
         # Filter by publishers
@@ -85,7 +87,6 @@ class BookViewSet(
         return queryset
 
     def get_books_by_status(self, user, queryset, status):
-        print(user)
         reader_book_ids = ProgressUpdate.objects.filter(reader=user).values("book")
         finished_book_ids = (
             reader_book_ids.filter(status=ProgressUpdate.FINISHED)
