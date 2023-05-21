@@ -102,14 +102,11 @@ class BookViewSet(
         )
 
         if status == "finished":
-            queryset = queryset.filter(id__in=finished_book_ids).annotate(
-                rating=Avg(("reviews__stars"))
-            )
+            queryset = queryset.filter(id__in=finished_book_ids)
         elif status == "reading":
             queryset = (
                 queryset.filter(id__in=reading_book_ids)
                 .exclude(id__in=finished_book_ids)
-                .annotate(rating=Avg(("reviews__stars")))
             )
 
         return queryset
