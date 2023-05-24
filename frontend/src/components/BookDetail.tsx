@@ -3,6 +3,7 @@ import Link from "next/link"
 import { css } from "@emotion/react"
 import { BriefBook } from "@/entities/book"
 import { recommendBook } from "@/api/friend"
+import { postProgressUpdate } from "@/api/progress-update"
 import { BookRecommendation } from "@/components/BookRecommendationEditor"
 import Button from "./Button"
 import AuthGuard from "./AuthGuard"
@@ -66,6 +67,11 @@ export default function BookDetail({ book }: BookDetailProps) {
                 open={isProgressUpdateEditorOpen}
                 onClose={() => toggleProgressUpdateEditor(false)}
                 onDone={(progressUpdate) => {
+                    postProgressUpdate(
+                        progressUpdate.status,
+                        progressUpdate.message,
+                        book.id
+                    ).catch((err) => alert(JSON.stringify(err)))
                     toggleProgressUpdateEditor(false)
                 }}
             />
