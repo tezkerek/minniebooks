@@ -10,6 +10,9 @@ router.register("authors", views.AuthorViewSet, basename="author")
 router.register("quotes", views.QuoteViewSet, basename="quote")
 router.register("likes", views.LikeDislikeViewSet, basename="like")
 router.register(
+    "progress-updates", views.ProgressUpdateViewSet, basename="progress-update"
+)
+router.register(
     "book-recommendations",
     views.BookRecommendationViewSet,
     basename="book-recommendation",

@@ -1,4 +1,4 @@
-from django.db.models import Avg, Exists, OuterRef
+from django.db.models import Avg, Q, Exists, OuterRef
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
@@ -18,6 +18,7 @@ from .serializers import (
     AuthorSerializer,
     BookRecommendationSerializer,
     BookSerializer,
+    BookBriefSerializer,
     LikeDislikeSerializer,
     ProgressUpdateSerializer,
     QuoteSerializer,
@@ -49,6 +50,13 @@ class BookViewSet(
     def get_queryset(self):
         queryset = super().get_queryset()
 
+        status = self.request.query_params.get("status")
+        if status:
+            user = self.request.query_params.get("user")
+            if user == "0" or user is None:
+                user = self.request.user
+            queryset = self.filter_by_status(user, queryset, status)
+
         # Filter by publishers
         publishers = self.request.query_params.getlist("publisher")
         if publishers:
@@ -74,6 +82,29 @@ class BookViewSet(
             # For each book, indicate if it's rated by the current user
             queryset = queryset.annotate(
                 is_rated=Exists(self.request.user.reviews.filter(book=OuterRef("id")))
+            )
+
+        return queryset
+
+    def filter_by_status(self, user, queryset, status):
+        reader_book_ids = ProgressUpdate.objects.filter(reader=user).values("book")
+        finished_book_ids = (
+            reader_book_ids.filter(status=ProgressUpdate.FINISHED)
+            .distinct()
+        )
+        reading_book_ids = (
+            reader_book_ids.filter(
+                Q(status=ProgressUpdate.READING) | Q(status=ProgressUpdate.STARTED)
+            )
+            .distinct()
+        )
+
+        if status == "finished":
+            queryset = queryset.filter(id__in=finished_book_ids)
+        elif status == "reading":
+            queryset = (
+                queryset.filter(id__in=reading_book_ids)
+                .exclude(id__in=finished_book_ids)
             )
 
         return queryset
@@ -129,13 +160,20 @@ class QuoteViewSet(
 class ProgressUpdateViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = ProgressUpdate.objects.all()
     serializer_class = ProgressUpdateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        reader_id = self.request.query_params.get("reader")
+        if reader_id == "0":
+            reader_id = self.request.user.id
+        return ProgressUpdate.objects.filter(reader=reader_id)
+
+    def perform_create(self, serializer):
+        serializer.save(reader=self.request.user)
 
 
 class LikeDislikeViewSet(

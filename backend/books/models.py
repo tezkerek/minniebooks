@@ -51,7 +51,16 @@ class LikeDislike(models.Model):
 
 
 class ProgressUpdate(models.Model):
-    status = models.CharField(max_length=20)
+    STARTED = "STARTED"
+    READING = "READING"
+    FINISHED = "FINISHED"
+
+    STATUS_CHOICES = [
+        (STARTED, "Started reading"),
+        (READING, "Currently reading"),
+        (FINISHED, "Finished reading"),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     message = models.CharField(max_length=512)
     reader = models.ForeignKey(
         MinnieBooksUser, on_delete=models.CASCADE, related_name="progress_updates"

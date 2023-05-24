@@ -103,7 +103,7 @@ class ProgressUpdateSerializer(ModelSerializer):
     class Meta:
         model = ProgressUpdate
         fields = ["id", "status", "message", "reader", "book"]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "reader"]
 
 
 class LikeDislikeSerializer(ModelSerializer):
