@@ -6,6 +6,9 @@ export async function login(email: string, password: string) {
     return true
   })
 }
+export async function register(first_name: string, last_name: string, email: string, password: string) {
+  return post("register/", { first_name, last_name, email, password })
+}
 
 export async function logout() {
   localStorage.removeItem("authToken")
