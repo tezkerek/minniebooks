@@ -20,6 +20,7 @@ from .models import (
 class ReviewSerializer(ModelSerializer):
     author_id = IntegerField(source="reader.pk", read_only=True)
     author_username = CharField(source="reader.full_name", read_only=True)
+    likes = IntegerField()
 
     class Meta:
         model = Review

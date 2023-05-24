@@ -4,4 +4,5 @@ export default interface Review {
     text: string
     authorId: number
     authorUsername: string
+    likes: number
 }

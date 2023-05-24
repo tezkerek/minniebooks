@@ -38,9 +38,9 @@ class Review(models.Model):
 class LikeDislike(models.Model):
     value = models.IntegerField()
     reader = models.ForeignKey(
-        MinnieBooksUser, on_delete=models.CASCADE, related_name="likes"
+        MinnieBooksUser, on_delete=models.CASCADE, related_name="votes"
     )
-    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="likes")
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="votes")
 
     class Meta:
         constraints = [
