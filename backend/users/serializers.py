@@ -18,13 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "profile_picture",
             "reviews",
-            "is_admin",
-            "is_employee",
-            "is_active",
-            "recommendations",
-            "quotes",
             "progress_updates",
-            "likes",
             "friendship_id",
             "friendship_status",
         ]
