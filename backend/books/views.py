@@ -173,7 +173,7 @@ class ProgressUpdateViewSet(
 
     def get_queryset(self):
         reader_id = self.request.query_params.get("reader")
-        if reader_id == "0":
+        if reader_id is None or reader_id == "0":
             reader_id = self.request.user.id
         return ProgressUpdate.objects.filter(reader=reader_id)
 
