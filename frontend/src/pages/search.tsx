@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Head from "next/head";
 import { css } from "@emotion/react";
-import styles from "@/styles/Search.module.scss";
 import Slider from "@mui/material/Slider";
+import { InputAdornment, TextField } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
+import styles from "@/styles/Search.module.scss";
 import { Publisher } from "@/entities/book";
 import { useBookList, BookFilters } from "@/api/book";
 import Navbar from "@/components/Navbar";
@@ -53,19 +55,21 @@ export default function SearchPage() {
       >
         <div className={styles.container}>
           <div className={styles.search}>
-            <form>
-              <input
-                className={styles.inputField}
-                type="text"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                }}
-              />
-              <button className={styles.submitButton} type="submit">
-                Search
-              </button>
-            </form>
+            <TextField
+              id="searchInput"
+              variant="outlined"
+              fullWidth={true}
+              label="Search"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start"><SearchIcon /></InputAdornment>
+                ),
+              }}
+            />
           </div>
           <div className={styles.filters}>
             <p className={styles.filterTitle}>Choose Publisher</p>
