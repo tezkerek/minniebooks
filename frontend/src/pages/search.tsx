@@ -1,12 +1,16 @@
-import { css } from "@emotion/react";
-import styles from "@/styles/Search.module.scss";
-import Slider from "@mui/material/Slider";
-import { Publisher } from "@/entities/book";
+import { useState } from "react";
 import Head from "next/head";
+import { css } from "@emotion/react";
+import Slider from "@mui/material/Slider";
+import { InputAdornment, TextField } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
+import styles from "@/styles/Search.module.scss";
+import { Publisher } from "@/entities/book";
+import { useBookList, BookFilters } from "@/api/book";
 import Navbar from "@/components/Navbar";
 import PublisherFilter from "@/components/PublisherFilter";
-import { useState } from "react";
 import BookGrid from "@/components/BookGrid";
+import RatingSelector from "@/components/RatingSelector";
 
 const mockPublishers: Array<Publisher> = ["Alcatel", "Briceag", "Babadag"];
 
@@ -14,13 +18,25 @@ const MIN_BOOK_YEAR = 1500;
 const MAX_BOOK_YEAR = 2023;
 
 export default function SearchPage() {
+  // prettier-ignore
   const [selectedPublishers, setSelectedPublishers] = useState<Array<Publisher>>([]);
   const [maxYear, setMaxYear] = useState<number>(2023);
   const [minYear, setMinYear] = useState<number>(1984);
   const [query, setQuery] = useState<string>("");
-  const submitToBE = () => {
-    console.log(query, maxYear, minYear, selectedPublishers);
-  };
+  const [minRating, setMinRating] = useState<number>(0);
+
+  const filters: BookFilters = { minYear, maxYear };
+  if (selectedPublishers.length > 0) {
+    filters.publishers = selectedPublishers;
+  }
+  if (minRating > 0) {
+    filters.minRating = minRating;
+  }
+  if (query.length > 0) {
+    filters.query = query;
+  }
+
+  const { books, error, isLoading } = useBookList(filters);
 
   return (
     <>
@@ -39,19 +55,21 @@ export default function SearchPage() {
       >
         <div className={styles.container}>
           <div className={styles.search}>
-            <form onSubmit={submitToBE}>
-              <input
-                className={styles.inputField}
-                type="text"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                }}
-              />
-              <button className={styles.submitButton} type="submit">
-                Search
-              </button>
-            </form>
+            <TextField
+              id="searchInput"
+              variant="outlined"
+              fullWidth={true}
+              label="Search"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start"><SearchIcon /></InputAdornment>
+                ),
+              }}
+            />
           </div>
           <div className={styles.filters}>
             <p className={styles.filterTitle}>Choose Publisher</p>
@@ -91,9 +109,25 @@ export default function SearchPage() {
             <p css={filterInfoCss}>
               Range: {minYear} - {maxYear}
             </p>
+
+            <p className={styles.filterTitle}>Select min rating</p>
+
+            <div
+              css={css`
+                padding-bottom: 32px;
+              `}
+            >
+              <RatingSelector
+                rating={minRating}
+                maxRating={5}
+                onRatingChange={(value) => {
+                  setMinRating(value);
+                }}
+              />
+            </div>
           </div>
           <div className={styles.results}>
-            <BookGrid books={[]} />
+            <BookGrid books={books ?? []} />
           </div>
         </div>
       </main>
@@ -102,8 +136,10 @@ export default function SearchPage() {
 }
 
 const filterInfoCss = css`
+  padding-bottom: 30px;
   font-weight: bold;
 `;
+
 const sliderColor = css`
   color: var(--color-accent);
 `;

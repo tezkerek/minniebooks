@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { authFetcher, fetcher } from './fetcher'
-import { Book, BriefBook } from '@/entities/book'
+import { Book, BriefBook, Publisher } from '@/entities/book'
 import { JsonBriefAuthor, parseBriefAuthor } from './author'
 import { JsonReview, parseReview } from './review'
 
@@ -18,8 +18,24 @@ export function useBook(id: string | null) {
     }
 }
 
-export function useBookList() {
-    const { data, error, isLoading } = useSWR<Array<JsonBook>, any>(`/api/books/`, fetcher)
+export interface BookFilters {
+    publishers?: Array<Publisher>
+    minYear?: number
+    maxYear?: number
+    minRating?: number
+    query?: string
+}
+
+export function useBookList(filters?: BookFilters) {
+    const queryString =
+        typeof filters !== "undefined"
+            ? bookFiltersToURLSearchParams(filters).toString()
+            : ""
+
+    const { data, error, isLoading } = useSWR<Array<JsonBook>, any>(
+        `/api/books/?` + queryString,
+        fetcher
+    )
 
     return {
         books: data ? data.map(parseBook) : data,
@@ -70,4 +86,33 @@ export function parseBook(json: JsonBook): Book {
         json.reviews.map(parseReview),
         json.is_rated,
     )
+}
+
+const BOOK_FILTERS_JS_TO_URL_MAPPING: {[key in keyof BookFilters]-?: string} = {
+    publishers: "publisher",
+    minYear: "min_year",
+    maxYear: "max_year",
+    minRating: "min_rating",
+    query: "search",
+}
+
+function bookFiltersToURLSearchParams(filters: BookFilters): URLSearchParams {
+    const urlParams = new URLSearchParams()
+
+    Object.keys(filters).forEach(key => {
+        const filterKey = key as keyof typeof filters
+        const filter = filters[filterKey]
+        const queryKey = BOOK_FILTERS_JS_TO_URL_MAPPING[filterKey]
+
+        if (typeof filter === "undefined") return
+
+        if (Array.isArray(filter)) {
+            filter.forEach(v => urlParams.append(queryKey, v))
+            return
+        }
+
+        urlParams.append(queryKey, filter.toString())
+    })
+
+    return urlParams
 }

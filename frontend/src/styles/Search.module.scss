@@ -5,6 +5,8 @@
     grid-template-areas:
         ". search"
         "filters results";
+    row-gap: 10px;
+    margin-top: 15px;
 }
 
 .results {
@@ -17,23 +19,6 @@
     align-items: center;
     grid-area: search;
     padding-left: 3%;
-    .inputField {
-        outline: none;
-        border-radius: 0%;
-        font-size: 1.1em;
-        width: 54vw;
-        padding: 4px;
-    }
-    .submitButton {
-        padding: 4px;
-        outline: none;
-        border-radius: 0%;
-        font-size: 1.1em;
-        background: transparent;
-        color: var(--color-on-accent);
-        box-shadow: none;
-        border-style: solid;
-    }
 }
 
 .filters {

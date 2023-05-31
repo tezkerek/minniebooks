@@ -20,7 +20,7 @@ export default function RatingSelector({
           display: inline;
         `}
         onClick={() => {
-          onRatingChange(index);
+          onRatingChange(rating === index ? 0 : index);
         }}
       >
         {/* from google maps source code */}
