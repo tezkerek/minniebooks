@@ -9,6 +9,7 @@ interface BookItemProps {
 
 const Item = styled.div`
     display: flex;
+    align-items: center;
     flex-direction: column;
     padding: 5px 10px;
     text-align: center;
