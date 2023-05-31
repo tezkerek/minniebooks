@@ -1,5 +1,6 @@
 import useSWR from 'swr'
 import { authFetcher, fetcher } from './fetcher'
+import { ProgressUpdateStatus as Status } from "@/entities/ProgressUpdate"
 import { Book, BriefBook, Publisher } from '@/entities/book'
 import { JsonBriefAuthor, parseBriefAuthor } from './author'
 import { JsonReview, parseReview } from './review'
@@ -41,6 +42,19 @@ export function useBookList(filters?: BookFilters) {
         books: data ? data.map(parseBook) : data,
         error,
         isLoading
+    }
+}
+
+export function useUserBooks(userId: string | null, status: Status) {
+    const { data, error, isLoading, mutate } = useSWR<Array<JsonBook>, any>(
+        userId ? `/api/books/?status=${status.toLowerCase()}&user=${userId}` : null,
+        fetcher
+    )
+    return {
+        books: data ? data.map(parseBook) : data,
+        error,
+        isLoading,
+        mutate,
     }
 }
 
