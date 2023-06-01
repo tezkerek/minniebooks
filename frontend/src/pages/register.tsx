@@ -91,11 +91,11 @@ export default function RegisterPage(): JSX.Element {
           error={!passwordGood && password != ""}
         />
         <Button
-          disabled={!(passwordGood && emailGood) || !(firstName.length !== 0 && lastName.length !==0)}
+          disabled={!(passwordGood && emailGood && firstName.length > 0 && lastName.length > 0)}
           onClick={(): void => {
-            register( firstName , lastName, email, password)
-            .then(() => router.push("/login"))
-            .catch((err) => alert(JSON.stringify(err)));
+            register(firstName, lastName, email, password)
+              .then(() => router.push("/login"))
+              .catch((err) => alert(JSON.stringify(err)));
           }}
         >
           Register
