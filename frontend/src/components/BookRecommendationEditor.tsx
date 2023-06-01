@@ -31,7 +31,7 @@ export default function BookRecommendationEditor({
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
-          width: 30vw;
+          width: 100%;
         `}
       >
         <Autocomplete
@@ -59,7 +59,6 @@ export default function BookRecommendationEditor({
             display: block;
             margin: 10px;
             width: 100%;
-            font-family: Arial, Helvetica, sans-serif;
           `}
           value={message}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {

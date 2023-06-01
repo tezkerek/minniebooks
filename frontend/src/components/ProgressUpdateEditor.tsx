@@ -48,8 +48,7 @@ export default function ProgressUpdateEditor({
           minRows={10}
           css={css`
             display: block;
-            width: 30vh;
-            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
           `}
           value={message}
           onChange={(ev) => {

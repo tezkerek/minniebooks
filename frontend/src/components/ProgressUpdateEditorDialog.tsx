@@ -13,10 +13,10 @@ export default function ProgressUpdateEditorDialog(
   const { onDone, ...dialogProps } = props;
 
   return (
-    <Dialog {...dialogProps}>
+    <Dialog {...dialogProps} fullWidth={true} maxWidth="sm">
       <DialogContent
         css={css`
-          padding: 3vw;
+          padding: 40px;
         `}
       >
         <ProgressUpdateEditor onDone={onDone} />

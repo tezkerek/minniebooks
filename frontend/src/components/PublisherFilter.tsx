@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import { Publisher } from "@/entities/book";
+import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 
 interface PublisherFilterProps {
   publishers: Array<Publisher>;
@@ -28,18 +29,22 @@ export default function PublisherFilter({
 
   return (
     <>
-      {publishers.map((publisher, i) => (
-        <div key={i}>
-          <input
-            css={checkboxColor}
-            type="checkbox"
-            checked={selectedPublishers.includes(publisher)}
-            onChange={handleBox}
-            value={publisher}
+      <FormGroup>
+        {publishers.map((publisher, i) => (
+          <FormControlLabel
+            key={i}
+            label={publisher}
+            control={
+              <Checkbox
+                css={checkboxColor}
+                checked={selectedPublishers.includes(publisher)}
+                onChange={handleBox}
+                value={publisher}
+              />
+            }
           />
-          <label css={labelCheckbox}>{publisher}</label>
-        </div>
-      ))}
+        ))}
+      </FormGroup>
     </>
   );
 }

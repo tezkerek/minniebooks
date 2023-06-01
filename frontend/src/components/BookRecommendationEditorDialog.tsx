@@ -20,12 +20,20 @@ export default function BookRecommendationEditorDialog(
   const { onDone, ...dialogProps } = props;
 
   return (
-    <Dialog {...dialogProps}>
+    <Dialog {...dialogProps} fullWidth maxWidth="sm">
       <DialogContent
         css={css`
-          padding: 3vw;
+          padding: 30px;
         `}
       >
+        <p
+          css={css`
+            text-align: center;
+            margin-bottom: 5px;
+          `}
+        >
+          Recommend this book
+        </p>
         <BookRecommendationEditor
           friends={isLoading ? [] : (friends as Array<User>)}
           onDone={(recommendation: BookRecommendation): void => {
