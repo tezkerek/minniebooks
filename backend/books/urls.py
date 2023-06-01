@@ -26,4 +26,5 @@ urlpatterns = [
         name="book-search",
     ),
     path("api/publishers/", views.PublishersApiView.as_view(), name="publisher"),
+    path("api/feed/", views.FeedAPIView().as_view(), name="feed"),
 ]
