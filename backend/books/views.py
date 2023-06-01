@@ -47,9 +47,7 @@ class BookViewSet(
 
     def get_queryset(self):
         # Annotate each review with its votes
-        reviews_queryset = Review.objects.prefetch_related("reader", "votes").annotate(
-            likes=Sum("votes__value", default=0)
-        )
+        reviews_queryset = Review.objects.with_likes().prefetch_related("reader")
 
         queryset = Book.objects.prefetch_related(
             Prefetch("reviews", queryset=reviews_queryset)
@@ -125,9 +123,7 @@ class ReviewViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = Review.objects.prefetch_related("votes").annotate(
-        likes=Sum("votes__value", default=0)
-    )
+    queryset = Review.objects.with_likes()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 

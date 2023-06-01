@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CheckConstraint, UniqueConstraint, Q
+from django.db.models import CheckConstraint, UniqueConstraint, Q, Sum
 from users.models import MinnieBooksUser
 
 
@@ -17,6 +17,12 @@ class Book(models.Model):
     book_cover = models.FileField(upload_to="files/bookcovers", null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name="books")
 
+class ReviewManager(models.Manager):
+    def with_likes(self):
+        return Review.objects.prefetch_related("votes").annotate(
+            likes=Sum("votes__value", default=0)
+        )
+
 
 class Review(models.Model):
     message = models.CharField(max_length=2048)
@@ -25,6 +31,8 @@ class Review(models.Model):
         MinnieBooksUser, on_delete=models.CASCADE, related_name="reviews"
     )
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="reviews")
+
+    objects = ReviewManager()
 
     class Meta:
         constraints = [
