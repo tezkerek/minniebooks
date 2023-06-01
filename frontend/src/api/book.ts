@@ -130,3 +130,24 @@ function bookFiltersToURLSearchParams(filters: BookFilters): URLSearchParams {
 
     return urlParams
 }
+
+export function usePublishers() {
+    const { data, error, isLoading, mutate } = useSWR<Array<JsonPublisher>, any>(
+        `/api/publishers/`,
+        fetcher
+    )
+    return {
+        publishers: data ? data.map(parsePublisher) : data,
+        error,
+        isLoading,
+        mutate,
+    }
+}
+
+export interface JsonPublisher {
+    publisher: string
+}
+
+export function parsePublisher(json: JsonPublisher): Publisher {
+    return json.publisher
+}
