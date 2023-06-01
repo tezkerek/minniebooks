@@ -31,7 +31,7 @@ export default function BookRecommendationEditor({
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
-          width: 30vw;
+          width: 100%;
         `}
       >
         <Autocomplete

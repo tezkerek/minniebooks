@@ -42,7 +42,7 @@ export default function ReviewEditor({
           minRows={10}
           css={css`
             display: block;
-            width: 30vh;
+            width: 100%;
             font-family: Arial, Helvetica, sans-serif;
           `}
           value={reviewText}
