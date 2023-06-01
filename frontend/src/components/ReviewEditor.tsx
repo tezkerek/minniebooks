@@ -43,7 +43,6 @@ export default function ReviewEditor({
           css={css`
             display: block;
             width: 100%;
-            font-family: Arial, Helvetica, sans-serif;
           `}
           value={reviewText}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {

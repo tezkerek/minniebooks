@@ -59,7 +59,6 @@ export default function BookRecommendationEditor({
             display: block;
             margin: 10px;
             width: 100%;
-            font-family: Arial, Helvetica, sans-serif;
           `}
           value={message}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
