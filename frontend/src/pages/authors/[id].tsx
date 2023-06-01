@@ -29,7 +29,8 @@ export default function BookDetailPage() {
       <main
         css={css`
           width: 80%;
-          margin: auto;
+          margin: 0 auto;
+          padding-bottom: 15px;
         `}
       >
         {isLoading ? "Loading" : <AuthorDetail author={author as Author} />}

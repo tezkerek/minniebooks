@@ -2,7 +2,7 @@ import { useState } from "react";
 import Head from "next/head";
 import { css } from "@emotion/react";
 import Slider from "@mui/material/Slider";
-import { InputAdornment, TextField } from "@mui/material";
+import { InputAdornment, Paper, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import styles from "@/styles/Search.module.scss";
 import { Publisher } from "@/entities/book";
@@ -13,13 +13,13 @@ import BookGrid from "@/components/BookGrid";
 import RatingSelector from "@/components/RatingSelector";
 
 const MIN_BOOK_YEAR = 1500;
-const MAX_BOOK_YEAR = 2023;
+const MAX_BOOK_YEAR = new Date().getFullYear();
 
 export default function SearchPage() {
   // prettier-ignore
   const [selectedPublishers, setSelectedPublishers] = useState<Array<Publisher>>([]);
-  const [maxYear, setMaxYear] = useState<number>(2023);
-  const [minYear, setMinYear] = useState<number>(1984);
+  const [minYear, setMinYear] = useState<number>(MIN_BOOK_YEAR);
+  const [maxYear, setMaxYear] = useState<number>(MAX_BOOK_YEAR);
   const [query, setQuery] = useState<string>("");
   const [minRating, setMinRating] = useState<number>(0);
 
@@ -48,7 +48,10 @@ export default function SearchPage() {
       <Navbar />
       <main
         css={css`
+          display: flex;
+          flex-direction: column;
           width: 80%;
+          flex-grow: 1;
           margin: auto;
         `}
       >
@@ -65,13 +68,15 @@ export default function SearchPage() {
               }}
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start"><SearchIcon /></InputAdornment>
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
                 ),
               }}
             />
           </div>
-          <div className={styles.filters}>
-            <p className={styles.filterTitle}>Choose Publisher</p>
+          <Paper className={styles.filters}>
+            <p className={styles.filterTitle}>Publisher</p>
             <PublisherFilter
               publishers={publishers.isLoading ? [] : publishers.publishers!}
               selectedPublishers={selectedPublishers}
@@ -79,10 +84,9 @@ export default function SearchPage() {
                 setSelectedPublishers(publishers)
               }
             />
-            <p className={styles.filterTitle}>Choose Min Year</p>
+            <p className={styles.filterTitle}>Min Year</p>
 
             <Slider
-              css={sliderColor}
               max={MAX_BOOK_YEAR}
               min={MIN_BOOK_YEAR}
               value={minYear}
@@ -92,11 +96,10 @@ export default function SearchPage() {
                 setMinYear(Math.min(newValue as number, maxYear));
               }}
             />
-            <p className={styles.filterTitle}>Choose Max Year</p>
+            <p className={styles.filterTitle}>Max Year</p>
             <Slider
               max={MAX_BOOK_YEAR}
               min={MIN_BOOK_YEAR}
-              css={sliderColor}
               value={maxYear}
               aria-label="Default"
               valueLabelDisplay="auto"
@@ -109,22 +112,16 @@ export default function SearchPage() {
               Range: {minYear} - {maxYear}
             </p>
 
-            <p className={styles.filterTitle}>Select min rating</p>
+            <p className={styles.filterTitle}>Minimum rating</p>
 
-            <div
-              css={css`
-                padding-bottom: 32px;
-              `}
-            >
-              <RatingSelector
-                rating={minRating}
-                maxRating={5}
-                onRatingChange={(value) => {
-                  setMinRating(value);
-                }}
-              />
-            </div>
-          </div>
+            <RatingSelector
+              rating={minRating}
+              maxRating={5}
+              onRatingChange={(value) => {
+                setMinRating(value);
+              }}
+            />
+          </Paper>
           <div className={styles.results}>
             <BookGrid books={books ?? []} />
           </div>
@@ -137,8 +134,4 @@ export default function SearchPage() {
 const filterInfoCss = css`
   padding-bottom: 30px;
   font-weight: bold;
-`;
-
-const sliderColor = css`
-  color: var(--color-accent);
 `;

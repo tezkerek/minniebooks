@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import styled from '@emotion/styled'
 import styles from '@/styles/Home.module.css'
 import Navbar from '@/components/Navbar'
 import BookGrid from '@/components/BookGrid'
@@ -18,11 +19,22 @@ export default function Home() {
       <Navbar />
 
       <main className={styles.main}>
+        <SiteHeader>MinnieBooks</SiteHeader>
+        <SectionHeader>For you</SectionHeader>
         <FeaturedBooks />
       </main>
     </>
   )
 }
+
+const SiteHeader = styled.h1`
+  font-size: 6em;
+  margin-bottom: 40px;
+`
+
+const SectionHeader = styled.h1`
+  margin-bottom: 20px;
+`
 
 function FeaturedBooks() {
   const { books, error, isLoading } = useBookList()

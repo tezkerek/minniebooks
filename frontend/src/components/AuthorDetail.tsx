@@ -9,19 +9,13 @@ export default function UserDetail({ author }: AuthorDetailProps) {
   return (
     <div>
       <div css={mainCss}>
-        <img
-          src={author.picture}
-          alt="User picture"
-          width={300}
-          height={300}
-        />
+        <img src={author.picture} alt="User picture" width={300} height={300} />
         <div css={detailsCss}>
           <p css={titleCss}>{`${author.fullName}`}</p>
+          <div css={aboutCss}>
+            <p>{author.description}</p>
+          </div>
         </div>
-      </div>
-      <div css={aboutCss}>
-        <p css={titleCss}>About</p>
-        <p>{author.description}</p>
       </div>
     </div>
   );
