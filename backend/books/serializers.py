@@ -20,7 +20,7 @@ from .models import (
 class ReviewSerializer(ModelSerializer):
     author_id = IntegerField(source="reader.pk", read_only=True)
     author_username = CharField(source="reader.full_name", read_only=True)
-    likes = IntegerField()
+    likes = IntegerField(read_only=True)
 
     class Meta:
         model = Review
@@ -33,7 +33,7 @@ class ReviewSerializer(ModelSerializer):
             "author_id",
             "author_username",
         ]
-        read_only_fields = ["id", "likes"]
+        read_only_fields = ["id"]
 
     def validate_book(self, book):
         if self.context["request"].user.reviews.filter(book=book).exists():
