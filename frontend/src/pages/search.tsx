@@ -3,16 +3,14 @@ import Head from "next/head";
 import { css } from "@emotion/react";
 import Slider from "@mui/material/Slider";
 import { InputAdornment, TextField } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import styles from "@/styles/Search.module.scss";
 import { Publisher } from "@/entities/book";
-import { useBookList, BookFilters } from "@/api/book";
+import { useBookList, BookFilters, usePublishers } from "@/api/book";
 import Navbar from "@/components/Navbar";
 import PublisherFilter from "@/components/PublisherFilter";
 import BookGrid from "@/components/BookGrid";
 import RatingSelector from "@/components/RatingSelector";
-
-const mockPublishers: Array<Publisher> = ["Alcatel", "Briceag", "Babadag"];
 
 const MIN_BOOK_YEAR = 1500;
 const MAX_BOOK_YEAR = 2023;
@@ -37,6 +35,7 @@ export default function SearchPage() {
   }
 
   const { books, error, isLoading } = useBookList(filters);
+  const publishers = usePublishers();
 
   return (
     <>
@@ -74,7 +73,7 @@ export default function SearchPage() {
           <div className={styles.filters}>
             <p className={styles.filterTitle}>Choose Publisher</p>
             <PublisherFilter
-              publishers={mockPublishers}
+              publishers={publishers.isLoading ? [] : publishers.publishers!}
               selectedPublishers={selectedPublishers}
               onChange={(publishers: Array<Publisher>) =>
                 setSelectedPublishers(publishers)
