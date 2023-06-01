@@ -48,7 +48,7 @@ export function useBookList(filters?: BookFilters) {
 export function useUserBooks(userId: string | null, status: Status) {
     const { data, error, isLoading, mutate } = useSWR<Array<JsonBook>, any>(
         userId ? `/api/books/?status=${status.toLowerCase()}&user=${userId}` : null,
-        fetcher
+        authFetcher
     )
     return {
         books: data ? data.map(parseBook) : data,
