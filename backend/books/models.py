@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import CheckConstraint, UniqueConstraint, Q, Sum
+from utils.models import TimestampedModel
 from users.models import MinnieBooksUser
 
 
@@ -24,7 +25,7 @@ class ReviewManager(models.Manager):
         )
 
 
-class Review(models.Model):
+class Review(TimestampedModel):
     message = models.CharField(max_length=2048)
     stars = models.IntegerField()
     reader = models.ForeignKey(
@@ -58,7 +59,7 @@ class LikeDislike(models.Model):
         ]
 
 
-class ProgressUpdate(models.Model):
+class ProgressUpdate(TimestampedModel):
     STARTED = "STARTED"
     READING = "READING"
     FINISHED = "FINISHED"
@@ -86,7 +87,7 @@ class Quote(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="quotes")
 
 
-class BookRecommendation(models.Model):
+class BookRecommendation(TimestampedModel):
     message = models.CharField(max_length=512)
     book = models.ForeignKey(
         Book, on_delete=models.CASCADE, related_name="recommendations"
