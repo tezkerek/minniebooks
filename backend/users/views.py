@@ -9,6 +9,7 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
 )
 from rest_framework.authtoken.models import Token
@@ -69,6 +70,21 @@ class UserViewSet(
             queryset = Friendship.annotate_status(self.request.user, queryset)
 
         return queryset
+
+    def retrieve(self, request, pk=None):
+        if pk == "0":
+            try:
+                # Return the current user
+                user = request.user
+                serializer = self.get_serializer(user)
+                return Response(serializer.data)
+            except AttributeError:
+                return Response(status=HTTP_401_UNAUTHORIZED)
+        else:
+            # Return the user with the given ID
+            user = self.get_object()
+            serializer = self.get_serializer(user)
+            return Response(serializer.data)
 
 
 class FriendsViewSet(
