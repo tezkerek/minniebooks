@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import CheckConstraint, UniqueConstraint, Q, Sum, Avg
+from django.db.models.functions import Coalesce
 from utils.models import TimestampedModel
 from users.models import MinnieBooksUser
 
@@ -30,7 +31,7 @@ class Book(models.Model):
     @classmethod
     def annotate_rating(cls, queryset):
         return queryset.prefetch_related("reviews").annotate(
-            rating=Avg("reviews__stars")
+            rating=Coalesce(Avg("reviews__stars"), 0.0)
         )
 
 
