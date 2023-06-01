@@ -2,6 +2,8 @@ from django.db.models import Avg, Q, Exists, OuterRef, Sum, Prefetch
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
 from rest_framework import filters
 from django.db.models import Avg
 from .models import (
@@ -23,6 +25,7 @@ from .serializers import (
     ProgressUpdateSerializer,
     QuoteSerializer,
     ReviewSerializer,
+    PublisherSerializer,
 )
 
 
@@ -91,23 +94,18 @@ class BookViewSet(
 
     def filter_by_status(self, user, queryset, status):
         reader_book_ids = ProgressUpdate.objects.filter(reader=user).values("book")
-        finished_book_ids = (
-            reader_book_ids.filter(status=ProgressUpdate.FINISHED)
-            .distinct()
-        )
-        reading_book_ids = (
-            reader_book_ids.filter(
-                Q(status=ProgressUpdate.READING) | Q(status=ProgressUpdate.STARTED)
-            )
-            .distinct()
-        )
+        finished_book_ids = reader_book_ids.filter(
+            status=ProgressUpdate.FINISHED
+        ).distinct()
+        reading_book_ids = reader_book_ids.filter(
+            Q(status=ProgressUpdate.READING) | Q(status=ProgressUpdate.STARTED)
+        ).distinct()
 
         if status == "finished":
             queryset = queryset.filter(id__in=finished_book_ids)
         elif status == "reading":
-            queryset = (
-                queryset.filter(id__in=reading_book_ids)
-                .exclude(id__in=finished_book_ids)
+            queryset = queryset.filter(id__in=reading_book_ids).exclude(
+                id__in=finished_book_ids
             )
 
         return queryset
@@ -206,3 +204,10 @@ class BookRecommendationViewSet(
 
     def perform_create(self, serializer):
         serializer.save(sender=self.request.user)
+
+
+class PublishersApiView(APIView):
+    def get(self, request):
+        publishers = Book.objects.values("publisher").distinct()
+        serializer = PublisherSerializer(publishers, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)

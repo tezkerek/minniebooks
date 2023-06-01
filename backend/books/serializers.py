@@ -119,3 +119,9 @@ class BookRecommendationSerializer(ModelSerializer):
         model = BookRecommendation
         fields = ["id", "message", "book", "receiver", "sender"]
         read_only_fields = ["sender"]
+
+
+class PublisherSerializer(ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ["publisher"]
