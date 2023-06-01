@@ -136,6 +136,7 @@ export function usePublishers() {
         `/api/publishers/`,
         fetcher
     )
+
     return {
         publishers: data ? data.map(parsePublisher) : data,
         error,

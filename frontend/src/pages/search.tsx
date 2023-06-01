@@ -3,7 +3,7 @@ import Head from "next/head";
 import { css } from "@emotion/react";
 import Slider from "@mui/material/Slider";
 import { InputAdornment, TextField } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import styles from "@/styles/Search.module.scss";
 import { Publisher } from "@/entities/book";
 import { useBookList, BookFilters, usePublishers } from "@/api/book";
@@ -36,6 +36,7 @@ export default function SearchPage() {
 
   const { books, error, isLoading } = useBookList(filters);
   const publishers = usePublishers();
+
   return (
     <>
       <Head>
