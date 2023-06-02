@@ -1,3 +1,4 @@
+// Source: https://stackoverflow.com/a/3177838
 export function timeSince(date: Date): string {
   const now = new Date();
   const seconds = Math.floor((now.valueOf() - date.valueOf()) / 1000);

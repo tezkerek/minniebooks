@@ -1,5 +1,4 @@
-import { Box, Card, CardContent, CardMedia, Paper } from "@mui/material";
-import { css } from "@emotion/react";
+import { Stack } from "@mui/material";
 import { FeedEntry } from "@/entities/feed";
 import FeedItem from "./FeedItem";
 
@@ -9,17 +8,10 @@ export interface FeedProps {
 
 export default function Feed({ entries }: FeedProps) {
   return (
-    <Box
-      css={css`
-        display: flex;
-        flex-direction: column;
-        row-gap: 10px;
-        max-width: 600px;
-      `}
-    >
+    <Stack rowGap="10px">
       {entries.map((entry, i) => (
         <FeedItem key={i} entry={entry} />
       ))}
-    </Box>
+    </Stack>
   );
 }

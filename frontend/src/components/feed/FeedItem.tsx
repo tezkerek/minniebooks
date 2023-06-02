@@ -1,5 +1,4 @@
 import { HTMLAttributes, ReactNode } from "react";
-import Link from "next/link";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Card, CardContent, CardMedia, Stack } from "@mui/material";
@@ -14,6 +13,7 @@ import {
 import { BriefBook } from "@/entities/book";
 import { ProgressUpdateStatus as Status } from "@/entities/ProgressUpdate";
 import { timeSince } from "@/utils/date";
+import ShortLink from "@/components/ShortLink";
 import StarRating from "../StarRating";
 
 export default function FeedItem({ entry }: { entry: FeedEntry }) {
@@ -30,21 +30,21 @@ export default function FeedItem({ entry }: { entry: FeedEntry }) {
 function BookRecommendationItem({ entry }: { entry: FeedBookRecommendation }) {
   return (
     <FeedCard>
-      <FeedItemContent>
-        <EntryHeader timestamp={entry.timestamp}>
-          <LinkToUser id={entry.senderId}>
-            <b>{entry.senderName}</b>{" "}
-          </LinkToUser>
-          recommends
-        </EntryHeader>
-        <LinkToBook book={entry.book} />
-        <MessageBox>{entry.message}</MessageBox>
-      </FeedItemContent>
       <CardMedia
         component="img"
         image={entry.book.coverImageUrl}
         sx={{ width: 100 }}
       />
+      <FeedItemContent>
+        <EntryHeader timestamp={entry.timestamp}>
+          <LinkToUser id={entry.senderId}>
+            <b>{entry.senderName}</b>
+          </LinkToUser>{" "}
+          recommends
+        </EntryHeader>
+        <LinkToBook book={entry.book} />
+        <MessageBox>{entry.message}</MessageBox>
+      </FeedItemContent>
     </FeedCard>
   );
 }
@@ -61,6 +61,11 @@ function ProgressUpdateItem({ entry }: { entry: FeedProgressUpdate }) {
 
   return (
     <FeedCard>
+      <CardMedia
+        component="img"
+        image={entry.book.coverImageUrl}
+        sx={{ width: 100 }}
+      />
       <FeedItemContent>
         <EntryHeader timestamp={entry.timestamp}>
           <LinkToUser id={entry.posterId}>
@@ -71,11 +76,6 @@ function ProgressUpdateItem({ entry }: { entry: FeedProgressUpdate }) {
         <LinkToBook book={entry.book} />
         <MessageBox>{entry.message}</MessageBox>
       </FeedItemContent>
-      <CardMedia
-        component="img"
-        image={entry.book.coverImageUrl}
-        sx={{ width: 100 }}
-      />
     </FeedCard>
   );
 }
@@ -83,6 +83,11 @@ function ProgressUpdateItem({ entry }: { entry: FeedProgressUpdate }) {
 function ReviewItem({ entry }: { entry: FeedReview }) {
   return (
     <FeedCard>
+      <CardMedia
+        component="img"
+        image={entry.book.coverImageUrl}
+        sx={{ width: 100 }}
+      />
       <FeedItemContent>
         <EntryHeader timestamp={entry.timestamp}>
           <LinkToUser id={entry.authorId}>
@@ -94,11 +99,6 @@ function ReviewItem({ entry }: { entry: FeedReview }) {
         <StarRating rating={entry.stars} />
         <MessageBox>{entry.message}</MessageBox>
       </FeedItemContent>
-      <CardMedia
-        component="img"
-        image={entry.book.coverImageUrl}
-        sx={{ width: 100 }}
-      />
     </FeedCard>
   );
 }
@@ -145,7 +145,7 @@ const EntryHeader = (
 };
 
 const LinkToUser = ({ id, children }: { id: number; children: ReactNode }) => (
-  <Link href={`/users/${id}`}>{children}</Link>
+  <ShortLink href={`/users/${id}`}>{children}</ShortLink>
 );
 
 const LinkToBook = ({ book }: { book: BriefBook }) => (
@@ -154,14 +154,14 @@ const LinkToBook = ({ book }: { book: BriefBook }) => (
       margin-top: 10px;
     `}
   >
-    <Link href={`/books/${book.id}`}>{book.title}</Link>
+    <ShortLink href={`/books/${book.id}`}>{book.title}</ShortLink>
   </h2>
 );
 
 const MessageBox = styled.p`
   margin-top: 10px;
   border: 1px solid rgb(var(--background-rgb));
-  background-color: rgb(23, 23, 23);
+  background-color: rgb(var(--card-tint-rgb));
   padding: 5px;
   border-radius: 5px;
   flex-grow: 1;
