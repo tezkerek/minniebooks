@@ -21,6 +21,8 @@
 
   --color-accent: var(--bittersweet);
   --color-on-accent: rgb(var(--foreground-rgb));
+
+  --card-tint-rgb: 240, 240, 240;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,6 +31,8 @@
     --background-rgb: 19, 17, 30;
 
     --color-accent: var(--barn-red);
+
+    --card-tint-rgb: 23, 23, 23;
   }
 }
 

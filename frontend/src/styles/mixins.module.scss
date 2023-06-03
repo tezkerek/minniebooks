@@ -1,0 +1,21 @@
+@mixin slidingUnderline {
+  display: inline-block;
+
+  &:after {
+      box-sizing: border-box;
+      display: block;
+      content: '';
+      height: 2px;
+      background-color: var(--color-on-accent);
+      width: 0;
+      transition: width 0.25s 0.1s;
+  }
+
+  &:hover:after {
+      width: 100%;
+  }
+}
+
+.slidingUnderline {
+  @include slidingUnderline;
+}
