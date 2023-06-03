@@ -1,4 +1,5 @@
 import User from '@/entities/user'
+import { FriendshipStatus } from '@/entities/user'
 import useSWR from 'swr'
 import { authFetcher } from './fetcher'
 import { JsonUser, parseUser } from './user'
@@ -31,4 +32,34 @@ export async function removeFriend(userId: number) {
 
 export function fromJson(json: JsonUser): User {
     return new User(json.id, json.first_name, json.last_name, json.profile_picture)
+}
+
+export function useIncomingFriendRequests() {
+    const { data, error, isLoading } = useSWR<Array<JsonFriendRequest>, any>(`/api/friend-requests/?type=received`, authFetcher)
+    return {
+        friendRequests: data ? data.map(parseFriendRequest) : data,
+        error,
+        isLoading
+    }
+}
+
+interface JsonFriendRequest {
+    id: number
+    sender: number,
+    receiver: number,
+    status: FriendshipStatus,
+}
+
+export interface FriendRequest {
+    id: number
+    sender: number,
+    status: FriendshipStatus,
+}
+
+export function parseFriendRequest(json: JsonFriendRequest): FriendRequest {
+    return {
+        id: json.id,
+        sender: json.sender,
+        status: json.status as FriendshipStatus,
+    }
 }
