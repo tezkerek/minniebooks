@@ -52,10 +52,11 @@ class AuthorBriefSerializer(ModelSerializer):
 
 class BookBriefSerializer(ModelSerializer):
     authors = AuthorBriefSerializer(many=True)
+    rating = FloatField(required=False)
 
     class Meta:
         model = Book
-        fields = ["id", "title", "publisher", "year", "book_cover", "authors"]
+        fields = ["id", "title", "publisher", "year", "book_cover", "authors", "rating"]
         read_only_fields = ["id"]
 
 
@@ -136,7 +137,15 @@ class BookRecommendationFeedSerializer(ModelSerializer):
 
     class Meta:
         model = BookRecommendation
-        fields = ["entry_type", "id", "message", "book", "sender_id", "sender_name", "created_at"]
+        fields = [
+            "entry_type",
+            "id",
+            "message",
+            "book",
+            "sender_id",
+            "sender_name",
+            "created_at",
+        ]
 
 
 class ProgressUpdateFeedSerializer(ModelSerializer):

@@ -1,11 +1,10 @@
-from django.db.models import Avg, Q, Exists, OuterRef, Prefetch
+from django.db.models import Q, Exists, OuterRef, Prefetch
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework import filters
-from django.db.models import Avg
 from users.models import MinnieBooksUser
 from .models import (
     Author,
@@ -53,9 +52,11 @@ class BookViewSet(
         # Annotate each review with its votes
         reviews_queryset = Review.objects.with_likes().prefetch_related("reader")
 
-        queryset = Book.objects.prefetch_related(
-            Prefetch("reviews", queryset=reviews_queryset)
-        ).annotate(rating=Avg("reviews__stars"))
+        queryset = Book.annotate_rating(
+            Book.objects.prefetch_related(
+                Prefetch("reviews", queryset=reviews_queryset)
+            )
+        )
 
         # Filter by status
         status = self.request.query_params.get("status")
@@ -73,8 +74,8 @@ class BookViewSet(
         # Filter by minimum rating
         min_rating = self.request.query_params.get("min_rating")
         if min_rating:
-            queryset = queryset.annotate(ratio=Avg("reviews__stars")).filter(
-                ratio__gte=float(min_rating)
+            queryset = queryset.filter(
+                rating__gte=float(min_rating)
             )
 
         # Filter by year
@@ -143,7 +144,9 @@ class AuthorViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = Author.objects.all()
+    queryset = Author.objects.prefetch_related(
+        Prefetch("books", queryset=Book.objects.with_rating())
+    )
     serializer_class = AuthorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -221,12 +224,25 @@ class FeedAPIView(APIView):
 
         friends = MinnieBooksUser.objects.get_friends(user)
 
+        # Prefetch books with their rating
+        books_queryset = Book.objects.with_rating()
+
+        # Load the feed entries
         recommendations = BookRecommendation.objects.filter(
             sender__in=friends, receiver=user
-        )
-        progress_updates = ProgressUpdate.objects.filter(reader__in=friends)
-        reviews = Review.objects.with_likes().filter(reader__in=friends)
+        ).prefetch_related("sender", Prefetch("book", books_queryset))
 
+        progress_updates = ProgressUpdate.objects.filter(
+            reader__in=friends
+        ).prefetch_related("reader", Prefetch("book", books_queryset))
+
+        reviews = (
+            Review.objects.with_likes()
+            .filter(reader__in=friends)
+            .prefetch_related("reader", Prefetch("book", books_queryset))
+        )
+
+        # Concatenate the serializer results
         kwargs = {"many": True, "context": {"request": request}}
         feed = (
             BookRecommendationFeedSerializer(recommendations, **kwargs).data
