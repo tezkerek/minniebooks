@@ -1,9 +1,8 @@
-import { Stack } from "@mui/material";
+import { Card, CardContent, Stack } from "@mui/material";
 import { FriendRequest } from "@/api/friend";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { css } from "@emotion/react";
 import Navbar from "@/components/Navbar";
 import { useUser } from "@/api/user";
@@ -13,7 +12,7 @@ import FriendshipActionButton from "@/components/FriendshipActionButton";
 export default function FriendRequestsPage() {
   let { incomingfriends, error, isLoading } = useIncomingFriendRequests();
   isLoading = isLoading || typeof incomingfriends === "undefined";
-    console.log(incomingfriends);
+
   return (
     <>
       <Head>
@@ -35,19 +34,11 @@ export default function FriendRequestsPage() {
           "Loading"
         ) : (
           <FriendReqestGrid friendRequests={incomingfriends!} />
-          
         )}
       </main>
     </>
   );
 }
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  text-align: center;
-  gap: 15px;
-`;
 
 interface FriendReqestGridProps {
   friendRequests: Array<FriendRequest>;
@@ -56,13 +47,27 @@ interface FriendReqestGridProps {
 function FriendReqestGrid({ friendRequests }: FriendReqestGridProps) {
   return (
     <>
-      <Grid>
-        {friendRequests.map((friendRequest) => (
-          <Link key={friendRequest.id} href={`/users/${friendRequest.sender}`}>
-            <FriendReqestItem userId={String(friendRequest.sender)} />
-          </Link>
-        ))}
-      </Grid>
+      {friendRequests.length === 0 ? (
+        <h3
+          css={css`
+            text-align: center;
+            margin-top: 6px;
+          `}
+        >
+          No friend requests
+        </h3>
+      ) : (
+        <Stack rowGap="10px">
+          {friendRequests.map((friendRequest) => (
+            <Link
+              key={friendRequest.id}
+              href={`/users/${friendRequest.sender}`}
+            >
+              <FriendReqestItem userId={String(friendRequest.sender)} />
+            </Link>
+          ))}
+        </Stack>
+      )}
     </>
   );
 }
@@ -80,17 +85,34 @@ function FriendReqestItem({ userId }: FriendReqestItem) {
       {isLoading ? (
         "Loading"
       ) : (
-        <>
-          <div
-            css={css`
-              border: 4px solid gray;
-            `}
-          >
-            <p>{user?.fullName} wants to become your friend!</p>
+        <FeedCard>
+          <FeedItemContent>
+            <MessageBox>
+              {user?.fullName} wants to become your friend!
+            </MessageBox>
             <FriendshipActionButton user={user!} />
-          </div>
-        </>
+          </FeedItemContent>
+        </FeedCard>
       )}
     </>
   );
 }
+
+const MessageBox = styled.p`
+  margin-top: 10px;
+  border: 1px solid rgb(var(--background-rgb));
+  background-color: rgb(var(--card-tint-rgb));
+  padding: 5px;
+  border-radius: 5px;
+  flex-grow: 1;
+`;
+
+const FeedItemContent = styled(CardContent)`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+`;
+
+const FeedCard = styled(Card)`
+  display: flex;
+`;
