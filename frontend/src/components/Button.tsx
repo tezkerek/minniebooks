@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 const Button = styled.button`
     font-size: 1.1em;
     background-color: var(--color-accent);
-    color: rgb(var(--background-rgb));
+    color: rgb(var(--foreground-rgb));
     padding: 10px 15px;
     border-radius: 3px;
     border: 2px solid var(--color-accent);

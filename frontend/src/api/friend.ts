@@ -37,7 +37,7 @@ export function fromJson(json: JsonUser): User {
 export function useIncomingFriendRequests() {
     const { data, error, isLoading } = useSWR<Array<JsonFriendRequest>, any>(`/api/friend-requests/?type=received`, authFetcher)
     return {
-        incomingfriends: data ? data.map(parseFriendRequest) : data,
+        friendRequests: data ? data.map(parseFriendRequest) : data,
         error,
         isLoading
     }
