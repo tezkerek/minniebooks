@@ -9,6 +9,7 @@ import Button from "./Button"
 import AuthGuard from "./AuthGuard"
 import BookRecommendationEditorDialog from "./BookRecommendationEditorDialog"
 import ProgressUpdateEditorDialog from "./ProgressUpdateEditorDialog"
+import ShortLink from "./ShortLink"
 
 interface BookDetailProps {
     book: BriefBook
@@ -22,9 +23,9 @@ export default function BookDetail({ book }: BookDetailProps) {
 
     const authorNames = book.authors
         .map((author) => (
-            <Link key={author.id} href={`/authors/${author.id}`}>
+            <ShortLink key={author.id} href={`/authors/${author.id}`}>
                 {author.fullName}
-            </Link>
+            </ShortLink>
         ))
         // Place commas between authors
         .reduce(

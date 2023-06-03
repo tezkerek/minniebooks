@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { css } from "@emotion/react";
 import Review from "@/entities/review";
+import ShortLink from "./ShortLink";
 import StarRating from "./StarRating";
 
 interface ReviewListProps {
@@ -14,9 +14,9 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                 <div key={review.id}>
                     <p css={css`display: flex; align-items: center;`}>
                         <StarRating rating={review.rating} />
-                        <Link href={`/users/${review.authorId}`} css={css`margin-left: 5px;`}>
+                        <ShortLink href={`/users/${review.authorId}`} css={css`margin-left: 5px;`}>
                             {review.authorUsername}
-                        </Link>
+                        </ShortLink>
                     </p>
                     <p>{review.text}</p>
                     <span css={likeCounterCss}>

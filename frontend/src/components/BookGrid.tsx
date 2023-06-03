@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { BriefBook } from "@/entities/book";
 import BookItem from "@/components/BookItem";
 import { css } from "@emotion/react";
+import ShortLink from "./ShortLink";
 
 const Grid = styled.div`
     display: flex;
@@ -22,9 +23,9 @@ export default function BookGrid({ books }: BookGridProps) {
                         justify-content: center;
                     `}
                 >
-                    <Link href={`/books/${book.id}`}>
+                    <ShortLink href={`/books/${book.id}`}>
                         <BookItem book={book} />
-                    </Link>
+                    </ShortLink>
                 </div>
             )}
         </Grid>
