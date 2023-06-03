@@ -4,6 +4,7 @@ from rest_framework.serializers import (
     FloatField,
     CharField,
     BooleanField,
+    ReadOnlyField,
 )
 from rest_framework.exceptions import ValidationError
 from .models import (
@@ -125,3 +126,56 @@ class PublisherSerializer(ModelSerializer):
     class Meta:
         model = Book
         fields = ["publisher"]
+
+
+class BookRecommendationFeedSerializer(ModelSerializer):
+    entry_type = ReadOnlyField(default="book-recommendation")
+    sender_id = IntegerField(source="sender.pk", read_only=True)
+    sender_name = CharField(source="sender.full_name", read_only=True)
+    book = BookBriefSerializer()
+
+    class Meta:
+        model = BookRecommendation
+        fields = ["entry_type", "id", "message", "book", "sender_id", "sender_name", "created_at"]
+
+
+class ProgressUpdateFeedSerializer(ModelSerializer):
+    entry_type = ReadOnlyField(default="progress-update")
+    reader_id = IntegerField(source="reader.pk", read_only=True)
+    reader_name = CharField(source="reader.full_name", read_only=True)
+    book = BookBriefSerializer()
+
+    class Meta:
+        model = ProgressUpdate
+        fields = [
+            "entry_type",
+            "id",
+            "status",
+            "message",
+            "book",
+            "reader_id",
+            "reader_name",
+            "created_at",
+        ]
+
+
+class ReviewFeedSerializer(ModelSerializer):
+    entry_type = ReadOnlyField(default="review")
+    likes = IntegerField()
+    author_id = IntegerField(source="reader.pk", read_only=True)
+    author_username = CharField(source="reader.full_name", read_only=True)
+    book = BookBriefSerializer()
+
+    class Meta:
+        model = Review
+        fields = [
+            "entry_type",
+            "id",
+            "message",
+            "stars",
+            "book",
+            "likes",
+            "author_id",
+            "author_username",
+            "created_at",
+        ]

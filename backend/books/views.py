@@ -1,4 +1,4 @@
-from django.db.models import Avg, Q, Exists, OuterRef, Sum, Prefetch
+from django.db.models import Avg, Q, Exists, OuterRef, Prefetch
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
@@ -6,6 +6,7 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework import filters
 from django.db.models import Avg
+from users.models import MinnieBooksUser
 from .models import (
     Author,
     Book,
@@ -19,12 +20,15 @@ from .permissions import IsAdminOrReadOnly
 from .serializers import (
     AuthorSerializer,
     BookRecommendationSerializer,
+    BookRecommendationFeedSerializer,
     BookSerializer,
     BookBriefSerializer,
     LikeDislikeSerializer,
     ProgressUpdateSerializer,
+    ProgressUpdateFeedSerializer,
     QuoteSerializer,
     ReviewSerializer,
+    ReviewFeedSerializer,
     PublisherSerializer,
 )
 
@@ -47,9 +51,7 @@ class BookViewSet(
 
     def get_queryset(self):
         # Annotate each review with its votes
-        reviews_queryset = Review.objects.prefetch_related("reader", "votes").annotate(
-            likes=Sum("votes__value", default=0)
-        )
+        reviews_queryset = Review.objects.with_likes().prefetch_related("reader")
 
         queryset = Book.objects.prefetch_related(
             Prefetch("reviews", queryset=reviews_queryset)
@@ -125,9 +127,7 @@ class ReviewViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = Review.objects.prefetch_related("votes").annotate(
-        likes=Sum("votes__value", default=0)
-    )
+    queryset = Review.objects.with_likes()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -211,3 +211,28 @@ class PublishersApiView(APIView):
         publishers = Book.objects.values("publisher").distinct()
         serializer = PublisherSerializer(publishers, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class FeedAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = self.request.user
+
+        friends = MinnieBooksUser.objects.get_friends(user)
+
+        recommendations = BookRecommendation.objects.filter(
+            sender__in=friends, receiver=user
+        )
+        progress_updates = ProgressUpdate.objects.filter(reader__in=friends)
+        reviews = Review.objects.with_likes().filter(reader__in=friends)
+
+        kwargs = {"many": True, "context": {"request": request}}
+        feed = (
+            BookRecommendationFeedSerializer(recommendations, **kwargs).data
+            + ProgressUpdateFeedSerializer(progress_updates, **kwargs).data
+            + ReviewFeedSerializer(reviews, **kwargs).data
+        )
+        feed.sort(key=lambda entity: entity["created_at"])
+
+        return Response(feed, status=HTTP_200_OK)
