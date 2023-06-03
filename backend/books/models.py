@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CheckConstraint, UniqueConstraint, Q, Sum
+from django.db.models import CheckConstraint, UniqueConstraint, Q, Sum, Avg
 from utils.models import TimestampedModel
 from users.models import MinnieBooksUser
 
@@ -11,12 +11,28 @@ class Author(models.Model):
     picture = models.FileField(upload_to="files/authors")
 
 
+class BookManager(models.Manager):
+    def with_rating(self):
+        return Book.objects.prefetch_related("reviews").annotate(
+            rating=Avg("reviews__stars")
+        )
+
+
 class Book(models.Model):
     title = models.CharField(max_length=200)
     publisher = models.CharField(max_length=100)
     year = models.IntegerField(null=True, blank=True)
     book_cover = models.FileField(upload_to="files/bookcovers", null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name="books")
+
+    objects = BookManager()
+
+    @classmethod
+    def annotate_rating(cls, queryset):
+        return queryset.prefetch_related("reviews").annotate(
+            rating=Avg("reviews__stars")
+        )
+
 
 class ReviewManager(models.Manager):
     def with_likes(self):
