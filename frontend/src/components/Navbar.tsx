@@ -14,6 +14,9 @@ export default function Navbar() {
             </div>
             <div className={styles.navGroup}>
                 <AuthGuard alt={<NavItem href="/login">LOG IN</NavItem>}>
+                    <NavItem href="/friends">
+                        FRIENDS
+                    </NavItem>
                     <NavItem href="/users/0">
                         PROFILE
                     </NavItem>
