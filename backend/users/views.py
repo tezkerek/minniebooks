@@ -7,12 +7,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED,
-    HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
-    HTTP_403_FORBIDDEN,
 )
 from rest_framework.authtoken.models import Token
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotAuthenticated
 
 from .models import MinnieBooksUser, Friendship
 from .serializers import (
@@ -69,6 +67,16 @@ class UserViewSet(
             queryset = Friendship.annotate_status(self.request.user, queryset)
 
         return queryset
+
+    def get_object(self):
+        if self.kwargs.get("pk") == "0":
+            user = self.request.user
+            if user.is_anonymous:
+                raise NotAuthenticated("Must be signed in to access this route")
+            self.check_object_permissions(self.request, user)
+            return user
+        else:
+            return super().get_object()
 
 
 class FriendsViewSet(
