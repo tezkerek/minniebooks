@@ -1,4 +1,3 @@
-import Link from "next/link";
 import styled from "@emotion/styled";
 import { BriefBook } from "@/entities/book";
 import BookItem from "@/components/BookItem";
@@ -34,4 +33,4 @@ export default function BookGrid({ books }: BookGridProps) {
 
 interface BookGridProps {
     books: Array<BriefBook>
-}
+} 

@@ -152,3 +152,16 @@ export interface JsonPublisher {
 export function parsePublisher(json: JsonPublisher): Publisher {
     return json.publisher
 }
+
+export function useBookSuggestions() {
+    const { data, error, isLoading } = useSWR<Array<JsonBriefBook>, any>(
+        `/api/book-suggestions`,
+        authFetcher
+    )
+
+    return {
+        books: data ? data.map(parseBriefBook) : data,
+        error,
+        isLoading
+    }
+}
