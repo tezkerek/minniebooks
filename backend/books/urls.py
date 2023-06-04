@@ -25,6 +25,7 @@ urlpatterns = [
         views.BookViewSet.as_view({"get": "search"}),
         name="book-search",
     ),
-    path("api/publishers/", views.PublishersApiView.as_view(), name="publisher"),
-    path("api/feed/", views.FeedAPIView().as_view(), name="feed"),
+    path("api/publishers/", views.PublishersAPIView.as_view(), name="publisher"),
+    path("api/feed/", views.FeedAPIView.as_view(), name="feed"),
+    path("api/book-suggestions/", views.BookSuggestionsAPIView.as_view(), name="book-suggestions")
 ]

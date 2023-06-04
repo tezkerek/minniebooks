@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework import filters
+from rest_framework.request import QueryDict
 from users.models import MinnieBooksUser
 from .models import (
     Author,
@@ -30,6 +31,7 @@ from .serializers import (
     ReviewFeedSerializer,
     PublisherSerializer,
 )
+from utils import weighted_sample
 
 
 class BookViewSet(
@@ -74,9 +76,7 @@ class BookViewSet(
         # Filter by minimum rating
         min_rating = self.request.query_params.get("min_rating")
         if min_rating:
-            queryset = queryset.filter(
-                rating__gte=float(min_rating)
-            )
+            queryset = queryset.filter(rating__gte=float(min_rating))
 
         # Filter by year
         min_year = self.request.query_params.get("min_year")
@@ -95,23 +95,12 @@ class BookViewSet(
 
         return queryset
 
-    def filter_by_status(self, user, queryset, status):
-        reader_book_ids = ProgressUpdate.objects.filter(reader=user).values("book")
-        finished_book_ids = reader_book_ids.filter(
-            status=ProgressUpdate.FINISHED
-        ).distinct()
-        reading_book_ids = reader_book_ids.filter(
-            Q(status=ProgressUpdate.READING) | Q(status=ProgressUpdate.STARTED)
-        ).distinct()
-
+    @classmethod
+    def filter_by_status(cls, user, queryset, status):
         if status == "finished":
-            queryset = queryset.filter(id__in=finished_book_ids)
+            return Book.filter_finished(queryset, user)
         elif status == "reading":
-            queryset = queryset.filter(id__in=reading_book_ids).exclude(
-                id__in=finished_book_ids
-            )
-
-        return queryset
+            return Book.filter_reading(queryset, user)
 
     def search(self, request):
         query = request.GET.get("query", "")
@@ -209,11 +198,45 @@ class BookRecommendationViewSet(
         serializer.save(sender=self.request.user)
 
 
-class PublishersApiView(APIView):
+class PublishersAPIView(APIView):
     def get(self, request):
         publishers = Book.objects.values("publisher").distinct()
         serializer = PublisherSerializer(publishers, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class BookSuggestionsAPIView(APIView):
+    def get(self, request):
+        if self.request.user.is_anonymous:
+            books = Book.objects.with_rating().all()
+        else:
+            friends = MinnieBooksUser.objects.get_friends(request.user)
+
+            books = Book.objects.with_rating().none()
+
+            for friend in friends:
+                books = books.union(
+                    Book.filter_finished(Book.objects.with_rating(), friend)
+                )
+
+            user_book_ids = request.user.progress_updates.values("book_id")
+            user_books = Book.objects.with_rating().filter(id__in=user_book_ids)
+
+            books = books.difference(user_books)
+
+        weights = [min(0.1, book.rating) for book in books]
+        if sum(weights) == 0:
+            weights = None
+
+        chosen_books = weighted_sample(
+            list(books), weights=weights, k=min(len(books), 3)
+        )
+
+        book_serializer = BookBriefSerializer(
+            chosen_books, many=True, context={"request": request}
+        )
+
+        return Response(book_serializer.data, status=HTTP_200_OK)
 
 
 class FeedAPIView(APIView):

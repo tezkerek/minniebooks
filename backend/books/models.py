@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import CheckConstraint, UniqueConstraint, Q, Sum, Avg
+from django.db.models.functions import Coalesce
 from utils.models import TimestampedModel
 from users.models import MinnieBooksUser
 
@@ -30,7 +31,49 @@ class Book(models.Model):
     @classmethod
     def annotate_rating(cls, queryset):
         return queryset.prefetch_related("reviews").annotate(
-            rating=Avg("reviews__stars")
+            rating=Coalesce(Avg("reviews__stars"), 0.0)
+        )
+
+    @classmethod
+    def filter_by_reader(cls, queryset, user):
+        """
+        Filter books for which the user has progress updates.
+        """
+        user_book_ids = (
+            ProgressUpdate.objects.filter(reader=user).values("book_id").distinct()
+        )
+
+        return queryset.filter(id__in=user_book_ids)
+
+    @classmethod
+    def filter_finished(cls, queryset, user):
+        """
+        Filter books that the user has finished.
+        """
+        return queryset.filter(
+            id__in=ProgressUpdate.objects.filter(
+                reader=user, status=ProgressUpdate.FINISHED
+            )
+            .values("book_id")
+            .distinct()
+        )
+
+    @classmethod
+    def filter_reading(cls, queryset, user):
+        """
+        Filter books that the user has started but has not finished.
+        """
+        finished_book_ids = cls.filter_finished(Book.objects.all(), user)
+        print(list(b.id for b in finished_book_ids))
+        reading_book_ids = (
+            ProgressUpdate.objects.filter(
+                reader=user, status__in=(ProgressUpdate.STARTED, ProgressUpdate.READING)
+            )
+            .values("book_id")
+            .distinct()
+        )
+        return queryset.filter(id__in=reading_book_ids).exclude(
+            id__in=finished_book_ids
         )
 
 
