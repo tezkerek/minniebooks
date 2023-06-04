@@ -9,7 +9,7 @@ import AuthGuard from '@/components/AuthGuard'
 import Feed from '@/components/feed/Feed'
 import ShortLink from '@/components/ShortLink'
 import { BriefBook } from '@/entities/book'
-import { useBookList } from '@/api/book'
+import { useBookSuggestions } from '@/api/book'
 import { useFeed } from '@/api/feed'
 
 export default function Home() {
@@ -73,7 +73,7 @@ function FeedSection() {
 }
 
 function FeaturedBooks() {
-  const { books, error, isLoading } = useBookList()
+  const { books, error, isLoading } = useBookSuggestions()
 
   if (isLoading) return <>Loading</>
   if (error) return <>{`Error: ${error}`}</>
