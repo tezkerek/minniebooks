@@ -31,11 +31,7 @@ from .serializers import (
     ReviewFeedSerializer,
     PublisherSerializer,
 )
-from users.views import (
-    FriendsViewSet
-)
 from utils import weighted_sample
-
 
 
 class BookViewSet(
@@ -80,9 +76,7 @@ class BookViewSet(
         # Filter by minimum rating
         min_rating = self.request.query_params.get("min_rating")
         if min_rating:
-            queryset = queryset.filter(
-                rating__gte=float(min_rating)
-            )
+            queryset = queryset.filter(rating__gte=float(min_rating))
 
         # Filter by year
         min_year = self.request.query_params.get("min_year")
@@ -221,55 +215,44 @@ class PublishersAPIView(APIView):
         serializer = PublisherSerializer(publishers, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
 
+
 class BookSuggestionsAPIView(APIView):
     def get(self, request):
-        friends_viewset = FriendsViewSet()
-        friends_viewset.request = request
-        friends = friends_viewset.get_queryset()
-        books = set()
-        book_viewset = BookViewSet()
-        query_params = QueryDict(mutable=True)
-        book_viewset.request = request
-        book_viewset.request._request.GET = query_params
+        if self.request.user.is_anonymous:
+            chosen_books = Book.objects.all()[:5]
+        else:
+            friends = MinnieBooksUser.objects.get_friends(request.user)
 
-        for friend in friends:
-            query_params.update(
-                {
-                    'status': 'finished',
-                    'user': str(friend.id)
-                }
-            )
-            books |= set(book_viewset.get_queryset())
+            books = set()
+            book_viewset = BookViewSet()
+            query_params = QueryDict(mutable=True)
+            book_viewset.request = request
+            book_viewset.request._request.GET = query_params
 
-        user_books = set()
-        query_params.update(
-            {
-                'status': 'reading',
-                'user': str(request.user.id)
-            }
+            for friend in friends:
+                query_params.update({"status": "finished", "user": str(friend.id)})
+                books |= set(book_viewset.get_queryset())
+
+            user_books = set()
+            query_params.update({"status": "reading", "user": str(request.user.id)})
+            user_books |= set(book_viewset.get_queryset())
+            query_params.update({"status": "finished", "user": str(request.user.id)})
+            user_books |= set(book_viewset.get_queryset())
+
+            books.difference_update(user_books)
+
+            weights = [book.rating for book in books]
+            if sum(weights) == 0:
+                weights = None
+
+            chosen_books = weighted_sample(list(books), weights=weights, k=min(len(books), 3))
+
+        book_serializer = BookBriefSerializer(
+            chosen_books, many=True, context={"request": request}
         )
-        user_books |= set(book_viewset.get_queryset())
-        query_params.update(
-            {
-                'status': 'finished',
-                'user': str(request.user.id)
-            }
-        )
-        user_books |= set(book_viewset.get_queryset())
 
-        books.difference_update(user_books)
+        return Response(book_serializer.data, status=HTTP_200_OK)
 
-        book_serializer = BookSerializer(books, many=True)
-        book_data = book_serializer.data
-
-        weights = [book.get('rating') for book in book_data]
-        if sum(weights) == 0:
-            weights = None
-
-        chosen_books = weighted_sample(book_data, weights=weights, k = min(len(book_data),3))
-        
-
-        return Response(chosen_books, status=HTTP_200_OK)
 
 class FeedAPIView(APIView):
     permission_classes = [IsAuthenticated]
