@@ -15,7 +15,7 @@ class Author(models.Model):
 class BookManager(models.Manager):
     def with_rating(self):
         return Book.objects.prefetch_related("reviews").annotate(
-            rating=Avg("reviews__stars")
+            rating=Coalesce(Avg("reviews__stars"), 0.0)
         )
 
 
