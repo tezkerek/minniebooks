@@ -95,23 +95,12 @@ class BookViewSet(
 
         return queryset
 
-    def filter_by_status(self, user, queryset, status):
-        reader_book_ids = ProgressUpdate.objects.filter(reader=user).values("book")
-        finished_book_ids = reader_book_ids.filter(
-            status=ProgressUpdate.FINISHED
-        ).distinct()
-        reading_book_ids = reader_book_ids.filter(
-            Q(status=ProgressUpdate.READING) | Q(status=ProgressUpdate.STARTED)
-        ).distinct()
-
+    @classmethod
+    def filter_by_status(cls, user, queryset, status):
         if status == "finished":
-            queryset = queryset.filter(id__in=finished_book_ids)
+            return Book.filter_finished(queryset, user)
         elif status == "reading":
-            queryset = queryset.filter(id__in=reading_book_ids).exclude(
-                id__in=finished_book_ids
-            )
-
-        return queryset
+            return Book.filter_reading(queryset, user)
 
     def search(self, request):
         query = request.GET.get("query", "")
@@ -219,33 +208,29 @@ class PublishersAPIView(APIView):
 class BookSuggestionsAPIView(APIView):
     def get(self, request):
         if self.request.user.is_anonymous:
-            chosen_books = Book.objects.all()[:5]
+            books = Book.objects.with_rating().all()
         else:
             friends = MinnieBooksUser.objects.get_friends(request.user)
 
-            books = set()
-            book_viewset = BookViewSet()
-            query_params = QueryDict(mutable=True)
-            book_viewset.request = request
-            book_viewset.request._request.GET = query_params
+            books = Book.objects.with_rating().none()
 
             for friend in friends:
-                query_params.update({"status": "finished", "user": str(friend.id)})
-                books |= set(book_viewset.get_queryset())
+                books = books.union(
+                    Book.filter_finished(Book.objects.with_rating(), friend)
+                )
 
-            user_books = set()
-            query_params.update({"status": "reading", "user": str(request.user.id)})
-            user_books |= set(book_viewset.get_queryset())
-            query_params.update({"status": "finished", "user": str(request.user.id)})
-            user_books |= set(book_viewset.get_queryset())
+            user_book_ids = request.user.progress_updates.values("book_id")
+            user_books = Book.objects.with_rating().filter(id__in=user_book_ids)
 
-            books.difference_update(user_books)
+            books = books.difference(user_books)
 
-            weights = [book.rating for book in books]
-            if sum(weights) == 0:
-                weights = None
+        weights = [min(0.1, book.rating) for book in books]
+        if sum(weights) == 0:
+            weights = None
 
-            chosen_books = weighted_sample(list(books), weights=weights, k=min(len(books), 3))
+        chosen_books = weighted_sample(
+            list(books), weights=weights, k=min(len(books), 3)
+        )
 
         book_serializer = BookBriefSerializer(
             chosen_books, many=True, context={"request": request}
