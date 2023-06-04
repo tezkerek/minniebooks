@@ -15,6 +15,10 @@ export default function UserDetail({ user }: UserDetailProps) {
         alt="User picture"
         width={300}
         height={300}
+        css={css`
+          border-radius: 50%;
+          object-fit: cover;
+        `}
       />
 
       <div css={detailsCss}>

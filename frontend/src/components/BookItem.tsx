@@ -29,17 +29,33 @@ export default function BookItem({ book }: BookItemProps) {
     const fullAuthorLine = firstAuthor + (authorCount >= 2 ? ` +${authorCount - 1}` : "")
 
     return (
-        <Card css={css`width: 160px;`}>
+        <FlexCard>
             <CardMedia component="img" image={book.coverImageUrl} alt="Book cover" height="224" />
-            <CardContent css={css`text-align: center;`}>
+            <FlexCardContent>
                 <p css={css`
                     margin-top: 5px;
                     font-size: 1.2em;
                     font-weight: bold;
                 `}>{book.title}</p>
-                <p css={css`font-size: 0.8em`}>{fullAuthorLine}</p>
+                <p css={css`font-size: 0.8em;`}>{fullAuthorLine}</p>
                 <StarRating rating={book.rating} />
-            </CardContent>
-        </Card>
+            </FlexCardContent>
+        </FlexCard>
     )
 }
+
+const FlexCard = styled(Card)`
+    width: 160px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+`
+
+const FlexCardContent = styled(CardContent)`
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+`
