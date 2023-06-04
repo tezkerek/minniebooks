@@ -6,6 +6,7 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework import filters
 from rest_framework.request import QueryDict
+from rest_framework.exceptions import NotAuthenticated
 from users.models import MinnieBooksUser
 from .models import (
     Author,
@@ -65,8 +66,14 @@ class BookViewSet(
         if status:
             user = self.request.query_params.get("user")
             if user == "0" or user is None:
-                user = self.request.user
-            queryset = self.filter_by_status(user, queryset, status)
+                if self.request.user.is_authenticated:
+                    queryset = self.filter_by_status(
+                        self.request.user, queryset, status
+                    )
+                else:
+                    raise NotAuthenticated("Must be authenticated to set user=0")
+            else:
+                queryset = self.filter_by_status(user, queryset, status)
 
         # Filter by publishers
         publishers = self.request.query_params.getlist("publisher")
