@@ -10,7 +10,6 @@ export default function Navbar() {
             <div className={styles.navGroup}>
                 <NavItem href="/">HOME</NavItem>
                 <NavItem href="/search">SEARCH</NavItem>
-                <NavItem href="/typing-test">TYPING</NavItem>
             </div>
             <div className={styles.navGroup}>
                 <AuthGuard alt={<NavItem href="/login">LOG IN</NavItem>}>
